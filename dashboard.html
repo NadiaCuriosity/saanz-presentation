@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAANZ — Your AI Landscape</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#060D18;--bg-primary:#0B1829;--bg-card:rgba(12,30,55,0.82);
+  --bg-card-hover:rgba(16,40,72,0.85);--text-primary:#EFF3F8;
+  --text-secondary:#8BA4C4;--text-muted:#4A6B8A;
+  --accent-ice:#5DADE2;--accent-gold:#E8B84B;--accent-teal:#3DD6C8;
+  --accent-lavender:#9B8EC4;--accent-coral:#E07B6C;--accent-green:#5DC77A;
+  --border-subtle:rgba(93,173,226,0.10);--glow-ice:rgba(93,173,226,0.12);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;background:var(--bg-deep);color:var(--text-primary);
+  min-height:100vh;overflow-x:hidden;line-height:1.5;
+  background:linear-gradient(175deg,#060D18 0%,#0B1829 40%,#0E2240 100%);
+}
+
+/* ── Loading ── */
+.loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:var(--bg-deep);transition:opacity .6s,visibility .6s}
+.loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-spinner{width:40px;height:40px;border:3px solid var(--border-subtle);
+  border-top-color:var(--accent-ice);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Snow ── */
+.snow-container{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.snow-particle{position:absolute;top:-6px;background:#fff;border-radius:50%;
+  animation:snowfall linear infinite;will-change:transform,opacity}
+@keyframes snowfall{
+  0%{transform:translateY(-10px) translateX(0px);opacity:0}
+  8%{opacity:1}88%{opacity:1}
+  100%{transform:translateY(105vh) translateX(40px);opacity:0}
+}
+
+/* ── Header ── */
+header{position:sticky;top:0;z-index:100;padding:20px 48px;
+  background:rgba(6,13,24,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.header-left h1{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.02em;
+  background:linear-gradient(135deg,#fff 0%,var(--accent-ice) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-left .subtitle{font-size:13px;color:var(--text-muted);margin-top:2px;letter-spacing:0.02em}
+.filters{display:flex;gap:6px}
+.filter-btn{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;
+  border:1px solid var(--border-subtle);border-radius:100px;background:transparent;
+  color:var(--text-secondary);cursor:pointer;transition:all .25s;letter-spacing:0.01em}
+.filter-btn:hover{border-color:var(--accent-ice);color:var(--text-primary)}
+.filter-btn.active{background:var(--accent-ice);color:#060D18;border-color:var(--accent-ice)}
+.filter-btn .count{opacity:.6;font-weight:400;margin-left:4px}
+
+/* ── Main ── */
+main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48px 120px}
+
+/* ── Hero stats ── */
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:48px}
+.hero-stat{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:16px;
+  padding:28px 24px;text-align:center;position:relative;overflow:hidden;
+  transition:transform .25s,border-color .25s}
+.hero-stat:hover{transform:translateY(-2px);border-color:rgba(93,173,226,0.2)}
+.hero-stat::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--accent-ice),transparent);border-radius:2px}
+.hero-stat .number{font-family:'Sora',sans-serif;font-size:52px;font-weight:700;display:block;
+  line-height:1.1;letter-spacing:-0.03em}
+.hero-stat .label{font-size:13px;color:var(--text-secondary);margin-top:8px;display:block;letter-spacing:0.01em}
+.hero-stat:nth-child(1) .number{color:var(--accent-ice)}
+.hero-stat:nth-child(2) .number{color:var(--accent-teal)}
+.hero-stat:nth-child(3) .number{color:var(--accent-gold)}
+.hero-stat:nth-child(4) .number{color:var(--accent-lavender)}
+
+/* ── Sections ── */
+.section{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
+.section:nth-child(2){animation-delay:.1s}.section:nth-child(3){animation-delay:.2s}
+.section:nth-child(4){animation-delay:.3s}.section:nth-child(5){animation-delay:.4s}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.section-number{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;border-radius:8px;
+  background:var(--glow-ice);color:var(--accent-ice);letter-spacing:0.02em;flex-shrink:0}
+.section-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:600;letter-spacing:-0.01em}
+.section-grid{display:grid;gap:20px}
+.section-grid.cols-2{grid-template-columns:1fr 1fr}
+.section-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.section-grid.cols-2-1{grid-template-columns:2fr 1fr}
+
+/* ── Cards ── */
+.card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:16px;
+  padding:24px;position:relative;overflow:hidden}
+.card-label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:0.06em;margin-bottom:16px}
+.chart-wrap{position:relative;width:100%}
+.chart-wrap.bar-chart{height:220px}
+.chart-wrap.bar-chart-tall{height:280px}
+.chart-wrap.donut-chart{height:240px;max-width:260px;margin:0 auto}
+
+/* ── Ski area pills ── */
+.pill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pill{font-size:12px;font-weight:500;padding:6px 14px;border-radius:100px;
+  background:rgba(93,173,226,0.08);border:1px solid var(--border-subtle);color:var(--text-secondary);
+  letter-spacing:0.01em;transition:border-color .2s}
+.pill:hover{border-color:var(--accent-ice)}
+.pill.size-small{border-left:3px solid var(--accent-ice)}
+.pill.size-medium{border-left:3px solid var(--accent-teal)}
+.pill.size-large{border-left:3px solid var(--accent-gold)}
+
+/* ── Quotes ── */
+.quotes-stack{display:flex;flex-direction:column;gap:14px}
+.quote-card{padding:16px 18px;background:rgba(93,173,226,0.04);border-left:2px solid var(--accent-ice);
+  border-radius:0 10px 10px 0;font-style:italic;font-size:14px;color:var(--text-secondary);line-height:1.55}
+.quote-attr{font-style:normal;font-size:11px;color:var(--text-muted);margin-top:6px;display:block}
+
+/* ── Setup stat mini-cards ── */
+.setup-stats{display:flex;flex-direction:column;gap:12px}
+.setup-stat{display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);
+  border-radius:10px;border:1px solid var(--border-subtle)}
+.setup-stat .stat-val{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;min-width:48px;text-align:center}
+.setup-stat .stat-desc{font-size:13px;color:var(--text-secondary)}
+
+/* ── Mountains ── */
+.mountains{position:fixed;bottom:0;left:0;right:0;z-index:0;pointer-events:none}
+
+/* ── Nav dots ── */
+.section-nav{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:100;
+  display:flex;flex-direction:column;gap:10px}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);opacity:0.4;
+  transition:all .25s;cursor:pointer;text-decoration:none}
+.nav-dot:hover,.nav-dot.active{background:var(--accent-ice);opacity:1;transform:scale(1.3)}
+
+/* ── Responsive for projection (1080p) ── */
+@media(max-width:960px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .section-grid.cols-2,.section-grid.cols-3,.section-grid.cols-2-1{grid-template-columns:1fr}
+  main{padding:32px 24px 100px}header{padding:16px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader-spinner"></div></div>
+<div class="snow-container" id="snow"></div>
+
+<!-- Mountains -->
+<div class="mountains">
+<svg viewBox="0 0 1440 220" preserveAspectRatio="none" style="width:100%;height:220px;display:block">
+  <defs>
+    <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(93,173,226,0.06)"/><stop offset="100%" stop-color="rgba(93,173,226,0)"/></linearGradient>
+    <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(93,173,226,0.03)"/><stop offset="100%" stop-color="rgba(93,173,226,0)"/></linearGradient>
+  </defs>
+  <path d="M0,220 L0,160 L90,110 L170,140 L260,70 L350,105 L430,45 L510,85 L600,35 L690,90 L770,55 L860,100 L940,65 L1030,115 L1110,80 L1200,130 L1290,95 L1370,145 L1440,125 L1440,220Z" fill="url(#m2)"/>
+  <path d="M0,220 L0,185 L80,150 L155,175 L245,120 L330,155 L415,100 L500,140 L590,95 L675,135 L760,90 L850,140 L935,110 L1020,155 L1110,130 L1195,165 L1280,145 L1365,175 L1440,160 L1440,220Z" fill="url(#m1)"/>
+</svg>
+</div>
+
+<header>
+  <div class="header-left">
+    <h1>Your AI Landscape</h1>
+    <div class="subtitle">SAANZ Pre-Session Survey</div>
+  </div>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All <span class="count" id="count-all"></span></button>
+    <button class="filter-btn" data-filter="small">Small <span class="count" id="count-small"></span></button>
+    <button class="filter-btn" data-filter="medium">Medium <span class="count" id="count-medium"></span></button>
+    <button class="filter-btn" data-filter="large">Large <span class="count" id="count-large"></span></button>
+  </div>
+</header>
+
+<nav class="section-nav" id="sectionNav">
+  <a class="nav-dot active" href="#hero-section" title="Overview"></a>
+  <a class="nav-dot" href="#sec-who" title="Who's in the room"></a>
+  <a class="nav-dot" href="#sec-where" title="Where you are"></a>
+  <a class="nav-dot" href="#sec-tools" title="What you're using"></a>
+  <a class="nav-dot" href="#sec-doing" title="What you're doing"></a>
+  <a class="nav-dot" href="#sec-next" title="What's next"></a>
+</nav>
+
+<main>
+  <!-- Hero Stats -->
+  <div class="hero-stats" id="hero-section">
+    <div class="hero-stat"><span class="number" id="stat-total">0</span><span class="label">Respondents</span></div>
+    <div class="hero-stat"><span class="number" id="stat-excited">0%</span><span class="label">Excited about AI</span></div>
+    <div class="hero-stat"><span class="number" id="stat-chatgpt">0%</span><span class="label">Use ChatGPT</span></div>
+    <div class="hero-stat"><span class="number" id="stat-daily">0%</span><span class="label">Use AI daily or more</span></div>
+  </div>
+
+  <!-- Section 1: Who's in the room -->
+  <div class="section" id="sec-who">
+    <div class="section-header"><span class="section-number">01</span><span class="section-title">Who's in the room</span></div>
+    <div class="section-grid cols-2">
+      <div class="card">
+        <div class="card-label">Ski area size</div>
+        <div class="chart-wrap donut-chart"><canvas id="chart-size"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Ski areas represented</div>
+        <div class="chart-wrap bar-chart-tall"><canvas id="chart-areas"></canvas></div>
+        <div class="card-label" style="margin-top:20px">Departments</div>
+        <div class="pill-grid" id="departments"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Where you are with AI -->
+  <div class="section" id="sec-where">
+    <div class="section-header"><span class="section-number">02</span><span class="section-title">Where you are with AI</span></div>
+    <div class="section-grid cols-2">
+      <div class="card">
+        <div class="card-label">AI maturity</div>
+        <div class="chart-wrap bar-chart-tall"><canvas id="chart-maturity"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-label">How often you use AI</div>
+        <div class="chart-wrap bar-chart-tall"><canvas id="chart-frequency"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: What you're using -->
+  <div class="section" id="sec-tools">
+    <div class="section-header"><span class="section-number">03</span><span class="section-title">What you're using</span></div>
+    <div class="section-grid cols-2">
+      <div class="card">
+        <div class="card-label">AI tools</div>
+        <div class="chart-wrap bar-chart-tall"><canvas id="chart-tools"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Paid subscriptions</div>
+        <div class="chart-wrap bar-chart-tall"><canvas id="chart-subs"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: What you're doing with it -->
+  <div class="section" id="sec-doing">
+    <div class="section-header"><span class="section-number">04</span><span class="section-title">What you're doing with it</span></div>
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-label">Use cases</div>
+        <div class="chart-wrap bar-chart-tall"><canvas id="chart-cases"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: What's next -->
+  <div class="section" id="sec-next">
+    <div class="section-header"><span class="section-number">05</span><span class="section-title">What's next</span></div>
+    <div class="section-grid cols-3">
+      <div class="card">
+        <div class="card-label">How you feel about AI</div>
+        <div class="chart-wrap donut-chart"><canvas id="chart-sentiment"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Built anything custom?</div>
+        <div class="setup-stats" id="setup-stats"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">In your own words</div>
+        <div class="quotes-stack" id="quotes"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ─── Config ───
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1jl8vYFX3BamFj4qf9vPFtEaplg_EWM6lahFOaiYgh1Y/gviz/tq?tqx=out:csv';
+
+const COLORS = {
+  ice:'#5DADE2', gold:'#E8B84B', teal:'#3DD6C8',
+  lavender:'#9B8EC4', coral:'#E07B6C', green:'#5DC77A', sky:'#7EC8E3',
+};
+
+const MATURITY_ORDER = [
+  'Curious but not sure where to start',
+  'Building confidence with basic tools',
+  'Testing multiple AI tools',
+  'Built AI Agents/Custom GPTs',
+  'Working with AI Automation/Agentic Systems',
+];
+const MATURITY_SHORT = ['Curious','Building confidence','Testing multiple tools','Built agents/GPTs','AI Automation'];
+const MATURITY_COLORS = [COLORS.coral,'#D4915E',COLORS.gold,COLORS.ice,COLORS.teal];
+
+const FREQ_ORDER = ["Haven't started",'Few times/month','Few times/week','Daily','Multiple times/day'];
+const FREQ_SHORT = ["Haven't started",'Few times/month','Few times/week','Daily','Multiple times/day'];
+const FREQ_COLORS = [COLORS.coral,'#D4915E',COLORS.gold,COLORS.ice,COLORS.teal];
+
+const SENTIMENT_MAP = {Excited:COLORS.teal,'Interested/figuring out':COLORS.ice,'Neutral/conditional use':COLORS.lavender,Doubtful:COLORS.coral};
+
+// ─── Fallback data ───
+const FALLBACK = [
+  {maturity:"Building confidence with basic tools",frequency:"Few times/week",tools:"ChatGPT",subs:"ChatGPT Teams/Plus",useCases:"Content writing, information finding, problem-solving",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:true,isLarge:true,skiArea:"Cardrona/TC",department:"Retail"},
+  {maturity:"Built AI Agents/Custom GPTs",frequency:"Daily",tools:"Copilot M365, ChatGPT, Julius AI",subs:"ChatGPT Teams/Plus, Other",useCases:"data analysis, writing, summarizing, brainstorming, problem-solving",setup:"Yes, set one up",sentiment:"Excited",concerns:"AI is a tool not a means to doing my job",comments:"",isSmall:false,isMedium:true,isLarge:false,skiArea:"Whakapapa",department:"Operations"},
+  {maturity:"Built AI Agents/Custom GPTs",frequency:"Multiple times/day",tools:"Copilot chat, ChatGPT, Copilot M365",subs:"M365 Premium, ChatGPT Teams/Plus",useCases:"Information finding, summarizing, data analysis, repetitive tasks",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"Execution/implementation focus",isSmall:false,isMedium:false,isLarge:true,skiArea:"NZSki",department:"Customer"},
+  {maturity:"Building confidence with basic tools",frequency:"Few times/week",tools:"ChatGPT, NotebookLM",subs:"Other",useCases:"Writing, information, summarizing, analysis, coding, training",setup:"Yes, set one up",sentiment:"Interested/figuring out",concerns:"",comments:"",isSmall:true,isMedium:false,isLarge:false,skiArea:"Porters",department:"Management"},
+  {maturity:"Curious but not sure where to start",frequency:"Few times/week",tools:"ChatGPT, Gemini",subs:"Other",useCases:"Information finding, problem-solving",setup:"Haven't set up",sentiment:"Interested/figuring out",concerns:"AI giving incorrect answers — never says I don't know",comments:"",isSmall:true,isMedium:false,isLarge:false,skiArea:"",department:""},
+  {maturity:"Testing multiple AI tools",frequency:"Daily",tools:"Copilot M365, ChatGPT",subs:"M365 Premium",useCases:"Information, summarizing, brainstorming",setup:"Haven't set up",sentiment:"Excited",concerns:"Lots of things called AI aren't really AI",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"NZSki",department:""},
+  {maturity:"Building confidence with basic tools",frequency:"Daily",tools:"ChatGPT",subs:"Other",useCases:"Writing, information, summarizing, analysis, coding, tasks, brainstorming",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:true,isLarge:false,skiArea:"Turoa",department:"Director"},
+  {maturity:"Building confidence with basic tools",frequency:"Daily",tools:"ChatGPT, Copilot M365",subs:"ChatGPT Teams/Plus",useCases:"Writing, information, summarizing, brainstorming",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:true,isLarge:false,skiArea:"Snowplanet",department:"Multiple depts"},
+  {maturity:"Working with AI Automation/Agentic Systems",frequency:"Multiple times/day",tools:"Claude, ChatGPT, Copilot M365, Copilot chat",subs:"Claude Pro/Max",useCases:"Writing, information, summarizing, coding, tasks, brainstorming",setup:"Yes, set one up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:true,isLarge:false,skiArea:"Mt Hutt",department:"Management"},
+  {maturity:"Testing multiple AI tools",frequency:"Daily",tools:"Copilot M365, Gemini Workspace, ChatGPT, Claude",subs:"Google Gemini Workspace",useCases:"Writing, information, summarizing, analysis, brainstorming, problem-solving, coding",setup:"Yes, set one up",sentiment:"Excited",concerns:"Data ownership, accuracy, misuse concerns",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"Whakapapa",department:"Quality"},
+  {maturity:"Building confidence with basic tools",frequency:"Few times/week",tools:"ChatGPT",subs:"M365 Premium, ChatGPT Teams/Plus",useCases:"Writing, information, summarizing, brainstorming",setup:"Haven't set up",sentiment:"Excited",concerns:"Don't know where to start",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"",department:""},
+  {maturity:"Curious but not sure where to start",frequency:"Haven't started",tools:"None",subs:"Other",useCases:"None",setup:"None",sentiment:"Doubtful",concerns:"Another thing to learn!!",comments:"",isSmall:true,isMedium:false,isLarge:false,skiArea:"Ohau",department:"GM"},
+  {maturity:"Building confidence with basic tools",frequency:"Few times/week",tools:"Copilot chat",subs:"Other",useCases:"Information, writing, brainstorming, problem-solving",setup:"Haven't set up",sentiment:"Neutral/conditional use",concerns:"",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"",department:""},
+  {maturity:"Building confidence with basic tools",frequency:"Few times/month",tools:"ChatGPT",subs:"Other",useCases:"Information, analysis, summarizing, image creation",setup:"Haven't set up",sentiment:"Neutral/conditional use",concerns:"",comments:"",isSmall:true,isMedium:false,isLarge:false,skiArea:"",department:""},
+  {maturity:"Curious but not sure where to start",frequency:"Haven't started",tools:"Gemini",subs:"Other",useCases:"Information, summarizing",setup:"Haven't set up",sentiment:"Neutral/conditional use",concerns:"",comments:"",isSmall:true,isMedium:false,isLarge:false,skiArea:"Broken River",department:""},
+  {maturity:"Working with AI Automation/Agentic Systems",frequency:"Daily",tools:"ChatGPT, Copilot chat",subs:"ChatGPT Teams/Plus",useCases:"Writing, summarizing, analysis, brainstorming, coding, tasks",setup:"Yes, set one up",sentiment:"Excited",concerns:"AI generates repetitive formats in interviews",comments:"Was questionnaire made with AI?",isSmall:false,isMedium:false,isLarge:true,skiArea:"Mt Hutt",department:"Admin"},
+  {maturity:"Building confidence with basic tools",frequency:"Multiple times/day",tools:"ChatGPT",subs:"ChatGPT Teams/Plus",useCases:"Writing, information, summarizing, analysis, brainstorming",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"",department:""},
+  {maturity:"Building confidence with basic tools",frequency:"Multiple times/day",tools:"Copilot M365, Gemini, ChatGPT, Claude",subs:"ChatGPT Teams/Plus, M365 Premium",useCases:"Writing, information, summarizing, analysis",setup:"Haven't set up",sentiment:"Interested/figuring out",concerns:"",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"",department:""},
+  {maturity:"Building confidence with basic tools",frequency:"Multiple times/day",tools:"ChatGPT, Gemini",subs:"ChatGPT Teams/Plus",useCases:"Writing, information, summarizing, analysis, problem-solving, tasks",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:true,isLarge:false,skiArea:"Snowplanet",department:"Management"},
+  {maturity:"Curious but not sure where to start",frequency:"Few times/week",tools:"Copilot M365",subs:"M365 Premium",useCases:"Information finding",setup:"Haven't set up",sentiment:"Neutral/conditional use",concerns:"",comments:"",isSmall:true,isMedium:false,isLarge:false,skiArea:"",department:""},
+  {maturity:"Built AI Agents/Custom GPTs",frequency:"Multiple times/day",tools:"Copilot M365, Copilot chat, Gemini Workspace, ChatGPT",subs:"M365 Premium",useCases:"Writing, information, summarizing, analysis, brainstorming, problem-solving, coding, tasks",setup:"Haven't set up",sentiment:"Interested/figuring out",concerns:"",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"The Remarkables",department:"Management"},
+];
+
+// ─── State ───
+let allData = [];
+let charts = {};
+let currentFilter = 'all';
+
+// ─── Chart.js defaults ───
+Chart.defaults.color = '#8BA4C4';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.03)';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 13;
+Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(6,13,24,0.92)';
+Chart.defaults.plugins.tooltip.titleColor = '#EFF3F8';
+Chart.defaults.plugins.tooltip.bodyColor = '#8BA4C4';
+Chart.defaults.plugins.tooltip.borderColor = 'rgba(93,173,226,0.15)';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+// Custom plugin: bar value labels
+const barLabelPlugin = {
+  id:'barLabels',
+  afterDatasetsDraw(chart){
+    if(chart.config.type!=='bar') return;
+    const ctx = chart.ctx;
+    chart.data.datasets.forEach((ds,i)=>{
+      chart.getDatasetMeta(i).data.forEach((bar,j)=>{
+        const val = ds.data[j];
+        if(val>0){
+          ctx.save();
+          ctx.fillStyle='#C5D5E8';
+          ctx.font="600 12px 'Sora', sans-serif";
+          ctx.textAlign='left';
+          ctx.textBaseline='middle';
+          ctx.fillText(val, bar.x+8, bar.y);
+          ctx.restore();
+        }
+      });
+    });
+  }
+};
+
+// Custom plugin: donut center text
+const centerTextPlugin = {
+  id:'centerText',
+  afterDraw(chart){
+    if(chart.config.type!=='doughnut' || !chart.config.options?.plugins?.centerText) return;
+    const {ctx, chartArea:{width,height,top,left}} = chart;
+    const total = chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+    ctx.save();
+    ctx.fillStyle='#EFF3F8';
+    ctx.font="700 32px 'Sora', sans-serif";
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(total, left+width/2, top+height/2 - 4);
+    ctx.restore();
+  }
+};
+
+Chart.register(barLabelPlugin, centerTextPlugin);
+
+// ─── Data processing ───
+function parseCSVRow(row){
+  return {
+    maturity: row[3]||'',
+    frequency: row[4]||'',
+    tools: row[5]||'',
+    subs: row[6]||'',
+    useCases: row[7]||'',
+    setup: row[8]||'',
+    sentiment: row[9]||'',
+    concerns: row[10]||'',
+    comments: row[11]||'',
+    isSmall: String(row[13]).toUpperCase()==='TRUE',
+    isMedium: String(row[14]).toUpperCase()==='TRUE',
+    isLarge: String(row[15]).toUpperCase()==='TRUE',
+    skiArea: row[16]||'',
+    department: row[17]||'',
+  };
+}
+
+function filterData(data, filter){
+  if(filter==='all') return data;
+  return data.filter(d => filter==='small'?d.isSmall : filter==='medium'?d.isMedium : d.isLarge);
+}
+
+function countBy(data, key, order){
+  const counts = {};
+  order.forEach(k => counts[k]=0);
+  data.forEach(d => { if(counts.hasOwnProperty(d[key])) counts[d[key]]++; });
+  return order.map(k => counts[k]);
+}
+
+function countMulti(data, key, keywords){
+  const counts = {};
+  keywords.forEach(k => counts[k.label]=0);
+  data.forEach(d=>{
+    const val = (d[key]||'').toLowerCase();
+    keywords.forEach(k => { if(k.re.test(val)) counts[k.label]++; });
+  });
+  return keywords;
+}
+
+const TOOL_KEYWORDS = [
+  {label:'ChatGPT',re:/chatgpt/i},{label:'Copilot M365',re:/copilot m365/i},
+  {label:'Copilot Chat',re:/copilot chat/i},{label:'Claude',re:/\bclaude\b/i},
+  {label:'Gemini',re:/\bgemini\b/i},{label:'NotebookLM',re:/notebook/i},
+  {label:'Julius AI',re:/julius/i},
+];
+const SUB_KEYWORDS = [
+  {label:'ChatGPT Teams/Plus',re:/chatgpt team/i},{label:'M365 Premium',re:/m365 prem/i},
+  {label:'Claude Pro/Max',re:/claude pro/i},{label:'Gemini Workspace',re:/gemini workspace/i},
+  {label:'Other',re:/\bother\b/i},
+];
+const CASE_KEYWORDS = [
+  {label:'Writing',re:/writ/i},{label:'Information finding',re:/info/i},
+  {label:'Summarising',re:/summar/i},{label:'Analysis',re:/analy/i},
+  {label:'Brainstorming',re:/brain/i},{label:'Problem solving',re:/problem/i},
+  {label:'Coding',re:/cod/i},{label:'Task automation',re:/task|repetit/i},
+  {label:'Image creation',re:/image/i},{label:'Training',re:/train/i},
+];
+
+function getSizeLabel(d){
+  if(d.isSmall) return 'Small';
+  if(d.isMedium) return 'Medium';
+  return 'Large';
+}
+
+// ─── Chart rendering ───
+function destroyCharts(){
+  Object.values(charts).forEach(c=>c.destroy());
+  charts={};
+}
+
+function makeBar(id, labels, data, colors, horizontal=true){
+  const ctx = document.getElementById(id);
+  return new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets:[{data, backgroundColor:colors, borderRadius:6, borderSkipped:false, barThickness:22}]},
+    options:{
+      indexAxis: horizontal?'y':'x',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{display:false},border:{display:false}},
+        y:{grid:{display:false},ticks:{color:'#C5D5E8',font:{size:12,family:"'DM Sans',sans-serif"},padding:4},border:{display:false}},
+      },
+      layout:{padding:{right:40}},
+    }
+  });
+}
+
+function makeDonut(id, labels, data, colors, showCenter=true){
+  const ctx = document.getElementById(id);
+  return new Chart(ctx, {
+    type:'doughnut',
+    data:{labels, datasets:[{data, backgroundColor:colors, borderColor:'rgba(6,13,24,0.6)',borderWidth:2,hoverBorderColor:'#fff',hoverOffset:6}]},
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{
+        centerText: showCenter,
+        legend:{position:'bottom',labels:{color:'#C5D5E8',padding:14,usePointStyle:true,pointStyleWidth:8,font:{size:12,family:"'DM Sans',sans-serif"}}},
+      },
+    }
+  });
+}
+
+// ─── Render all ───
+function renderDashboard(data){
+  destroyCharts();
+  const n = data.length;
+
+  // Hero stats
+  const pct = (count) => n===0?0:Math.round(count/n*100);
+  const excitedN = data.filter(d=>d.sentiment==='Excited').length;
+  const chatgptN = data.filter(d=>/chatgpt/i.test(d.tools)).length;
+  const dailyN = data.filter(d=>d.frequency==='Daily'||d.frequency==='Multiple times/day').length;
+  animateValue('stat-total', n, false);
+  animateValue('stat-excited', pct(excitedN), true);
+  animateValue('stat-chatgpt', pct(chatgptN), true);
+  animateValue('stat-daily', pct(dailyN), true);
+
+  // Size donut
+  const sizeData = [
+    data.filter(d=>d.isSmall).length,
+    data.filter(d=>d.isMedium).length,
+    data.filter(d=>d.isLarge).length,
+  ];
+  charts.size = makeDonut('chart-size',['Small (<100k)','Medium (100–250k)','Large (250k+)'],sizeData,[COLORS.ice,COLORS.teal,COLORS.gold]);
+
+  // Ski areas bar chart
+  const areaCounts = {};
+  data.forEach(d=>{ const a=d.skiArea.trim(); if(a) areaCounts[a]=(areaCounts[a]||0)+1; });
+  const areaSorted = Object.entries(areaCounts).sort((a,b)=>b[1]-a[1]);
+  if(areaSorted.length>0){
+    charts.areas = makeBar('chart-areas', areaSorted.map(a=>a[0]), areaSorted.map(a=>a[1]),
+      areaSorted.map((_,i)=>[COLORS.ice,COLORS.teal,COLORS.gold,COLORS.sky,COLORS.lavender,COLORS.green,COLORS.coral][i%7]));
+  }
+
+  // Department pills
+  const depts = {};
+  data.forEach(d=>{ const dep=d.department.trim(); if(dep) depts[dep]=(depts[dep]||0)+1; });
+  const deptSorted = Object.entries(depts).sort((a,b)=>b[1]-a[1]);
+  const deptContainer = document.getElementById('departments');
+  deptContainer.innerHTML = deptSorted.map(([name,count])=>{
+    return `<span class="pill">${name}${count>1?' <strong>×'+count+'</strong>':''}</span>`;
+  }).join('');
+
+  // Maturity
+  const maturityData = countBy(data,'maturity',MATURITY_ORDER);
+  charts.maturity = makeBar('chart-maturity', MATURITY_SHORT, maturityData, MATURITY_COLORS);
+
+  // Frequency
+  const freqData = countBy(data,'frequency',FREQ_ORDER);
+  charts.frequency = makeBar('chart-frequency', FREQ_SHORT, freqData, FREQ_COLORS);
+
+  // Tools
+  const toolCounts = TOOL_KEYWORDS.map(k=>({label:k.label, count:data.filter(d=>k.re.test(d.tools)).length}))
+    .sort((a,b)=>b.count-a.count);
+  charts.tools = makeBar('chart-tools', toolCounts.map(t=>t.label), toolCounts.map(t=>t.count),
+    toolCounts.map((_,i)=>[COLORS.ice,COLORS.teal,COLORS.gold,COLORS.sky,COLORS.lavender,COLORS.green,COLORS.coral][i%7]));
+
+  // Subscriptions
+  const subCounts = SUB_KEYWORDS.map(k=>({label:k.label, count:data.filter(d=>k.re.test(d.subs)).length}))
+    .sort((a,b)=>b.count-a.count);
+  charts.subs = makeBar('chart-subs', subCounts.map(s=>s.label), subCounts.map(s=>s.count),
+    subCounts.map((_,i)=>[COLORS.gold,COLORS.ice,COLORS.teal,COLORS.lavender,COLORS.coral][i%5]));
+
+  // Use cases
+  const caseCounts = CASE_KEYWORDS.map(k=>({label:k.label, count:data.filter(d=>k.re.test(d.useCases)).length}))
+    .sort((a,b)=>b.count-a.count);
+  charts.cases = makeBar('chart-cases', caseCounts.map(c=>c.label), caseCounts.map(c=>c.count),
+    caseCounts.map((_,i)=>[COLORS.ice,COLORS.teal,COLORS.gold,COLORS.sky,COLORS.lavender,COLORS.green,COLORS.coral,'#D4915E',COLORS.coral,'#8BC7A3'][i%10]));
+
+  // Sentiment donut
+  const sentLabels = Object.keys(SENTIMENT_MAP);
+  const sentData = sentLabels.map(s=>data.filter(d=>d.sentiment===s).length);
+  const sentColors = sentLabels.map(s=>SENTIMENT_MAP[s]);
+  charts.sentiment = makeDonut('chart-sentiment', sentLabels, sentData, sentColors);
+
+  // Setup stats
+  const setupContainer = document.getElementById('setup-stats');
+  const builtCount = data.filter(d=>/yes/i.test(d.setup)).length;
+  const notYetCount = data.filter(d=>/haven't set up/i.test(d.setup) && !/new info/i.test(d.setup)).length;
+  const interestedCount = data.filter(d=>/new info/i.test(d.setup)).length;
+  const noneCount = data.filter(d=>/^none$/i.test(d.setup)).length;
+  setupContainer.innerHTML = `
+    <div class="setup-stat"><span class="stat-val" style="color:${COLORS.teal}">${builtCount}</span><span class="stat-desc">Have built something custom</span></div>
+    <div class="setup-stat"><span class="stat-val" style="color:${COLORS.ice}">${interestedCount}</span><span class="stat-desc">Interested but haven't yet</span></div>
+    <div class="setup-stat"><span class="stat-val" style="color:${COLORS.lavender}">${notYetCount}</span><span class="stat-desc">Haven't set up anything</span></div>
+    ${noneCount?`<div class="setup-stat"><span class="stat-val" style="color:${COLORS.coral}">${noneCount}</span><span class="stat-desc">No experience</span></div>`:''}
+  `;
+
+  // Quotes
+  const quotesContainer = document.getElementById('quotes');
+  const quotes = data
+    .map(d=>({text:d.concerns, size:getSizeLabel(d)}))
+    .filter(q=>q.text && !/^none$/i.test(q.text) && q.text.length>5);
+  const extraQuotes = data
+    .map(d=>({text:d.comments, size:getSizeLabel(d)}))
+    .filter(q=>q.text && !/^no$/i.test(q.text) && q.text.length>5);
+  const allQuotes = [...quotes,...extraQuotes];
+  quotesContainer.innerHTML = allQuotes.length===0
+    ? '<p style="color:var(--text-muted);font-size:14px">No concerns shared in this group</p>'
+    : allQuotes.map(q=>`<div class="quote-card">"${q.text}"<span class="quote-attr">— ${q.size} ski area</span></div>`).join('');
+}
+
+// ─── Counter animation ───
+function animateValue(id, target, isPercent){
+  const el = document.getElementById(id);
+  const duration = 1200;
+  let start = null;
+  const step = ts => {
+    if(!start) start = ts;
+    const progress = Math.min((ts-start)/duration, 1);
+    const eased = 1 - Math.pow(1-progress, 3);
+    const val = Math.round(eased * target);
+    el.textContent = isPercent ? val+'%' : val;
+    if(progress<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ─── Filter logic ───
+document.getElementById('filters').addEventListener('click', e=>{
+  const btn = e.target.closest('.filter-btn');
+  if(!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderDashboard(filterData(allData, currentFilter));
+});
+
+// ─── Snow particles ───
+function createSnow(){
+  const container = document.getElementById('snow');
+  for(let i=0;i<25;i++){
+    const p = document.createElement('div');
+    p.className='snow-particle';
+    p.style.left = Math.random()*100+'%';
+    const size = Math.random()*2.5+1;
+    p.style.width = p.style.height = size+'px';
+    p.style.animationDuration = (Math.random()*25+18)+'s';
+    p.style.animationDelay = (Math.random()*25)+'s';
+    p.style.opacity = Math.random()*0.25+0.08;
+    container.appendChild(p);
+  }
+}
+
+// ─── Section nav scroll spy ───
+function setupScrollSpy(){
+  const sections = ['hero-section','sec-who','sec-where','sec-tools','sec-doing','sec-next'];
+  const dots = document.querySelectorAll('.nav-dot');
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const idx = sections.indexOf(entry.target.id);
+        if(idx>=0){
+          dots.forEach(d=>d.classList.remove('active'));
+          dots[idx].classList.add('active');
+        }
+      }
+    });
+  },{threshold:0.3});
+  sections.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) observer.observe(el);
+  });
+}
+
+// ─── Keyboard nav ───
+document.addEventListener('keydown', e=>{
+  const sections = ['hero-section','sec-who','sec-where','sec-tools','sec-doing','sec-next'];
+  const activeDot = document.querySelector('.nav-dot.active');
+  const dots = [...document.querySelectorAll('.nav-dot')];
+  const idx = dots.indexOf(activeDot);
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){
+    e.preventDefault();
+    const next = Math.min(idx+1, sections.length-1);
+    document.getElementById(sections[next])?.scrollIntoView({behavior:'smooth'});
+  }
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
+    e.preventDefault();
+    const prev = Math.max(idx-1, 0);
+    document.getElementById(sections[prev])?.scrollIntoView({behavior:'smooth'});
+  }
+});
+
+// ─── Init ───
+async function init(){
+  createSnow();
+  setupScrollSpy();
+
+  // Try live fetch, fall back to embedded data
+  try {
+    const resp = await fetch(SHEET_URL);
+    if(!resp.ok) throw new Error('Fetch failed');
+    const csv = await resp.text();
+    const parsed = Papa.parse(csv, {skipEmptyLines:true});
+    const rows = parsed.data.slice(1); // skip header
+    allData = rows.map(parseCSVRow);
+  } catch(e){
+    console.log('Using fallback data:', e.message);
+    allData = FALLBACK;
+  }
+
+  // Update filter counts
+  document.getElementById('count-all').textContent = `(${allData.length})`;
+  document.getElementById('count-small').textContent = `(${allData.filter(d=>d.isSmall).length})`;
+  document.getElementById('count-medium').textContent = `(${allData.filter(d=>d.isMedium).length})`;
+  document.getElementById('count-large').textContent = `(${allData.filter(d=>d.isLarge).length})`;
+
+  renderDashboard(allData);
+
+  // Hide loader
+  setTimeout(()=> document.getElementById('loader').classList.add('hidden'), 400);
+}
+
+init();
+</script>
+</body>
+</html>
