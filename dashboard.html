@@ -12,134 +12,139 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-deep:#060D18;--bg-primary:#0B1829;--bg-card:rgba(12,30,55,0.82);
-  --bg-card-hover:rgba(16,40,72,0.85);--text-primary:#EFF3F8;
-  --text-secondary:#8BA4C4;--text-muted:#4A6B8A;
-  --accent-ice:#5DADE2;--accent-gold:#E8B84B;--accent-teal:#3DD6C8;
-  --accent-lavender:#9B8EC4;--accent-coral:#E07B6C;--accent-green:#5DC77A;
-  --border-subtle:rgba(93,173,226,0.10);--glow-ice:rgba(93,173,226,0.12);
+  --bg:#060D18;--bg-card:rgba(12,30,55,0.82);--text:#EFF3F8;
+  --text-sec:#8BA4C4;--text-muted:#4A6B8A;
+  --ice:#5DADE2;--gold:#E8B84B;--teal:#3DD6C8;
+  --lavender:#9B8EC4;--coral:#E07B6C;--green:#5DC77A;--sky:#7EC8E3;
+  --border:rgba(93,173,226,0.10);--glow:rgba(93,173,226,0.12);
 }
 html{scroll-behavior:smooth}
-body{
-  font-family:'DM Sans',sans-serif;background:var(--bg-deep);color:var(--text-primary);
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
   min-height:100vh;overflow-x:hidden;line-height:1.5;
-  background:linear-gradient(175deg,#060D18 0%,#0B1829 40%,#0E2240 100%);
-}
+  background:linear-gradient(175deg,#060D18 0%,#0B1829 40%,#0E2240 100%)}
 
-/* ── Loading ── */
+/* Loading */
 .loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-  background:var(--bg-deep);transition:opacity .6s,visibility .6s}
+  background:var(--bg);transition:opacity .6s,visibility .6s}
 .loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.loader-spinner{width:40px;height:40px;border:3px solid var(--border-subtle);
-  border-top-color:var(--accent-ice);border-radius:50%;animation:spin .8s linear infinite}
+.loader-spinner{width:40px;height:40px;border:3px solid var(--border);
+  border-top-color:var(--ice);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Snow ── */
-.snow-container{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-.snow-particle{position:absolute;top:-6px;background:#fff;border-radius:50%;
-  animation:snowfall linear infinite;will-change:transform,opacity}
-@keyframes snowfall{
-  0%{transform:translateY(-10px) translateX(0px);opacity:0}
+/* Snow */
+.snow-wrap{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.snow{position:absolute;top:-6px;background:#fff;border-radius:50%;
+  animation:fall linear infinite;will-change:transform,opacity}
+@keyframes fall{
+  0%{transform:translateY(-10px) translateX(0);opacity:0}
   8%{opacity:1}88%{opacity:1}
   100%{transform:translateY(105vh) translateX(40px);opacity:0}
 }
 
-/* ── Header ── */
+/* Header */
 header{position:sticky;top:0;z-index:100;padding:20px 48px;
-  background:rgba(6,13,24,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.header-left h1{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.02em;
-  background:linear-gradient(135deg,#fff 0%,var(--accent-ice) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.header-left .subtitle{font-size:13px;color:var(--text-muted);margin-top:2px;letter-spacing:0.02em}
+  background:rgba(6,13,24,0.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:16px}
+.hdr-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.02em;
+  background:linear-gradient(135deg,#fff,var(--ice));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.hdr-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
 .filters{display:flex;gap:6px}
-.filter-btn{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;
-  border:1px solid var(--border-subtle);border-radius:100px;background:transparent;
-  color:var(--text-secondary);cursor:pointer;transition:all .25s;letter-spacing:0.01em}
-.filter-btn:hover{border-color:var(--accent-ice);color:var(--text-primary)}
-.filter-btn.active{background:var(--accent-ice);color:#060D18;border-color:var(--accent-ice)}
-.filter-btn .count{opacity:.6;font-weight:400;margin-left:4px}
+.fbtn{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;
+  border:1px solid var(--border);border-radius:100px;background:transparent;
+  color:var(--text-sec);cursor:pointer;transition:all .25s}
+.fbtn:hover{border-color:var(--ice);color:var(--text)}
+.fbtn.active{background:var(--ice);color:#060D18;border-color:var(--ice)}
+.fbtn .ct{opacity:.6;font-weight:400;margin-left:4px}
 
-/* ── Main ── */
+/* Layout */
 main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48px 120px}
 
-/* ── Hero stats ── */
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:48px}
-.hero-stat{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:16px;
+/* Hero stats */
+.hero{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:16px}
+.hcard{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
   padding:28px 24px;text-align:center;position:relative;overflow:hidden;
   transition:transform .25s,border-color .25s}
-.hero-stat:hover{transform:translateY(-2px);border-color:rgba(93,173,226,0.2)}
-.hero-stat::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--accent-ice),transparent);border-radius:2px}
-.hero-stat .number{font-family:'Sora',sans-serif;font-size:52px;font-weight:700;display:block;
+.hcard:hover{transform:translateY(-2px);border-color:rgba(93,173,226,0.2)}
+.hcard::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--ice),transparent)}
+.hcard .num{font-family:'Sora',sans-serif;font-size:52px;font-weight:700;display:block;
   line-height:1.1;letter-spacing:-0.03em}
-.hero-stat .label{font-size:13px;color:var(--text-secondary);margin-top:8px;display:block;letter-spacing:0.01em}
-.hero-stat:nth-child(1) .number{color:var(--accent-ice)}
-.hero-stat:nth-child(2) .number{color:var(--accent-teal)}
-.hero-stat:nth-child(3) .number{color:var(--accent-gold)}
-.hero-stat:nth-child(4) .number{color:var(--accent-lavender)}
+.hcard .lbl{font-size:13px;color:var(--text-sec);margin-top:8px;display:block}
+.hcard:nth-child(1) .num{color:var(--ice)}
+.hcard:nth-child(2) .num{color:var(--teal)}
+.hcard:nth-child(3) .num{color:var(--gold)}
+.hcard:nth-child(4) .num{color:var(--lavender)}
 
-/* ── Sections ── */
-.section{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
-.section:nth-child(2){animation-delay:.1s}.section:nth-child(3){animation-delay:.2s}
-.section:nth-child(4){animation-delay:.3s}.section:nth-child(5){animation-delay:.4s}
-@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.section-number{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;width:28px;height:28px;
+/* Participation line */
+.part-line{text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:48px;padding:0 24px}
+.part-line span{color:var(--text-sec);font-weight:500}
+
+/* Sections */
+.sec{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:up .6s ease forwards}
+.sec:nth-child(2){animation-delay:.1s}.sec:nth-child(3){animation-delay:.2s}
+.sec:nth-child(4){animation-delay:.3s}.sec:nth-child(5){animation-delay:.4s}
+@keyframes up{to{opacity:1;transform:translateY(0)}}
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.sec-n{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;width:28px;height:28px;
   display:flex;align-items:center;justify-content:center;border-radius:8px;
-  background:var(--glow-ice);color:var(--accent-ice);letter-spacing:0.02em;flex-shrink:0}
-.section-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:600;letter-spacing:-0.01em}
-.section-grid{display:grid;gap:20px}
-.section-grid.cols-2{grid-template-columns:1fr 1fr}
-.section-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
-.section-grid.cols-2-1{grid-template-columns:2fr 1fr}
+  background:var(--glow);color:var(--ice);flex-shrink:0}
+.sec-t{font-family:'Sora',sans-serif;font-size:18px;font-weight:600;letter-spacing:-0.01em}
+.grid{display:grid;gap:20px}
+.grid.c2{grid-template-columns:1fr 1fr}
 
-/* ── Cards ── */
-.card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:16px;
+/* Cards */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
   padding:24px;position:relative;overflow:hidden}
-.card-label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;
+.card-lbl{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;
   letter-spacing:0.06em;margin-bottom:16px}
-.chart-wrap{position:relative;width:100%}
-.chart-wrap.bar-chart{height:220px}
-.chart-wrap.bar-chart-tall{height:280px}
-.chart-wrap.donut-chart{height:240px;max-width:260px;margin:0 auto}
+.cw{position:relative;width:100%}
+.cw.bar{height:280px}
+.cw.bar-sm{height:180px}
+.cw.donut-lg{height:300px;max-width:320px;margin:0 auto}
 
-/* ── Ski area pills ── */
-.pill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.pill{font-size:12px;font-weight:500;padding:6px 14px;border-radius:100px;
-  background:rgba(93,173,226,0.08);border:1px solid var(--border-subtle);color:var(--text-secondary);
-  letter-spacing:0.01em;transition:border-color .2s}
-.pill:hover{border-color:var(--accent-ice)}
-.pill.size-small{border-left:3px solid var(--accent-ice)}
-.pill.size-medium{border-left:3px solid var(--accent-teal)}
-.pill.size-large{border-left:3px solid var(--accent-gold)}
+/* Sentiment opener: 2-col */
+.opener{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.opener .card{display:flex;flex-direction:column;justify-content:center}
 
-/* ── Quotes ── */
-.quotes-stack{display:flex;flex-direction:column;gap:14px}
-.quote-card{padding:16px 18px;background:rgba(93,173,226,0.04);border-left:2px solid var(--accent-ice);
-  border-radius:0 10px 10px 0;font-style:italic;font-size:14px;color:var(--text-secondary);line-height:1.55}
-.quote-attr{font-style:normal;font-size:11px;color:var(--text-muted);margin-top:6px;display:block}
+/* Quotes */
+.quotes{display:flex;flex-direction:column;gap:14px;max-height:360px;overflow-y:auto}
+.qcard{padding:16px 18px;background:rgba(93,173,226,0.04);border-left:2px solid var(--ice);
+  border-radius:0 10px 10px 0;font-style:italic;font-size:14px;color:var(--text-sec);line-height:1.55}
+.qattr{font-style:normal;font-size:11px;color:var(--text-muted);margin-top:6px;display:block}
 
-/* ── Setup stat mini-cards ── */
-.setup-stats{display:flex;flex-direction:column;gap:12px}
-.setup-stat{display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);
-  border-radius:10px;border:1px solid var(--border-subtle)}
-.setup-stat .stat-val{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;min-width:48px;text-align:center}
-.setup-stat .stat-desc{font-size:13px;color:var(--text-secondary)}
+/* Reusable assets big cards */
+.asset-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.acard{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  padding:36px 28px;text-align:center}
+.acard .anum{font-family:'Sora',sans-serif;font-size:56px;font-weight:700;display:block;line-height:1.1}
+.acard .albl{font-size:14px;color:var(--text-sec);margin-top:12px;display:block;line-height:1.4}
+.acard.yes{border-color:rgba(61,214,200,0.25);background:rgba(61,214,200,0.06)}
+.acard.yes .anum{color:var(--teal)}
+.acard.opp{border-color:rgba(232,184,75,0.25);background:rgba(232,184,75,0.06)}
+.acard.opp .anum{color:var(--gold)}
 
-/* ── Mountains ── */
-.mountains{position:fixed;bottom:0;left:0;right:0;z-index:0;pointer-events:none}
+/* Supporting (de-emphasised) */
+.supporting{opacity:0.7;transition:opacity .3s}
+.supporting:hover{opacity:1}
+.supporting .sec-t{font-size:15px;color:var(--text-sec)}
+.supporting .sec-n{width:24px;height:24px;font-size:10px}
+.supporting .card{padding:20px}
 
-/* ── Nav dots ── */
-.section-nav{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:100;
+/* Mountains */
+.mtn{position:fixed;bottom:0;left:0;right:0;z-index:0;pointer-events:none}
+
+/* Nav dots */
+.nav{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:100;
   display:flex;flex-direction:column;gap:10px}
-.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);opacity:0.4;
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);opacity:0.4;
   transition:all .25s;cursor:pointer;text-decoration:none}
-.nav-dot:hover,.nav-dot.active{background:var(--accent-ice);opacity:1;transform:scale(1.3)}
+.dot:hover,.dot.active{background:var(--ice);opacity:1;transform:scale(1.3)}
 
-/* ── Responsive for projection (1080p) ── */
 @media(max-width:960px){
-  .hero-stats{grid-template-columns:repeat(2,1fr)}
-  .section-grid.cols-2,.section-grid.cols-3,.section-grid.cols-2-1{grid-template-columns:1fr}
+  .hero{grid-template-columns:repeat(2,1fr)}
+  .grid.c2,.opener,.asset-grid{grid-template-columns:1fr}
   main{padding:32px 24px 100px}header{padding:16px 24px}
 }
 </style>
@@ -147,10 +152,9 @@ main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48p
 <body>
 
 <div class="loader" id="loader"><div class="loader-spinner"></div></div>
-<div class="snow-container" id="snow"></div>
+<div class="snow-wrap" id="snow"></div>
 
-<!-- Mountains -->
-<div class="mountains">
+<div class="mtn">
 <svg viewBox="0 0 1440 220" preserveAspectRatio="none" style="width:100%;height:220px;display:block">
   <defs>
     <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(93,173,226,0.06)"/><stop offset="100%" stop-color="rgba(93,173,226,0)"/></linearGradient>
@@ -162,143 +166,140 @@ main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48p
 </div>
 
 <header>
-  <div class="header-left">
-    <h1>Your AI Landscape</h1>
-    <div class="subtitle">SAANZ Pre-Session Survey</div>
+  <div>
+    <div class="hdr-title">Your AI Landscape</div>
+    <div class="hdr-sub">SAANZ Pre-Session Survey</div>
   </div>
   <div class="filters" id="filters">
-    <button class="filter-btn active" data-filter="all">All <span class="count" id="count-all"></span></button>
-    <button class="filter-btn" data-filter="small">Small <span class="count" id="count-small"></span></button>
-    <button class="filter-btn" data-filter="medium">Medium <span class="count" id="count-medium"></span></button>
-    <button class="filter-btn" data-filter="large">Large <span class="count" id="count-large"></span></button>
+    <button class="fbtn active" data-filter="all">All <span class="ct" id="ct-all"></span></button>
+    <button class="fbtn" data-filter="small">Small <span class="ct" id="ct-sm"></span></button>
+    <button class="fbtn" data-filter="medium">Medium <span class="ct" id="ct-md"></span></button>
+    <button class="fbtn" data-filter="large">Large <span class="ct" id="ct-lg"></span></button>
   </div>
 </header>
 
-<nav class="section-nav" id="sectionNav">
-  <a class="nav-dot active" href="#hero-section" title="Overview"></a>
-  <a class="nav-dot" href="#sec-who" title="Who's in the room"></a>
-  <a class="nav-dot" href="#sec-where" title="Where you are"></a>
-  <a class="nav-dot" href="#sec-tools" title="What you're using"></a>
-  <a class="nav-dot" href="#sec-doing" title="What you're doing"></a>
-  <a class="nav-dot" href="#sec-next" title="What's next"></a>
+<nav class="nav" id="nav">
+  <a class="dot active" href="#s0" title="Overview"></a>
+  <a class="dot" href="#s1" title="How people feel"></a>
+  <a class="dot" href="#s2" title="What they use AI for"></a>
+  <a class="dot" href="#s3" title="AI journey"></a>
+  <a class="dot" href="#s4" title="Reusable assets"></a>
+  <a class="dot" href="#s5" title="Tools"></a>
 </nav>
 
 <main>
-  <!-- Hero Stats -->
-  <div class="hero-stats" id="hero-section">
-    <div class="hero-stat"><span class="number" id="stat-total">0</span><span class="label">Respondents</span></div>
-    <div class="hero-stat"><span class="number" id="stat-excited">0%</span><span class="label">Excited about AI</span></div>
-    <div class="hero-stat"><span class="number" id="stat-chatgpt">0%</span><span class="label">Use ChatGPT</span></div>
-    <div class="hero-stat"><span class="number" id="stat-daily">0%</span><span class="label">Use AI daily or more</span></div>
-  </div>
 
-  <!-- Section 1: Who's in the room -->
-  <div class="section" id="sec-who">
-    <div class="section-header"><span class="section-number">01</span><span class="section-title">Who's in the room</span></div>
-    <div class="section-grid cols-2">
+  <!-- Hero -->
+  <div class="hero" id="s0">
+    <div class="hcard"><span class="num" id="v-total">0</span><span class="lbl">Respondents</span></div>
+    <div class="hcard"><span class="num" id="v-excited">0%</span><span class="lbl">Excited about AI</span></div>
+    <div class="hcard"><span class="num" id="v-daily">0%</span><span class="lbl">Use AI daily or more</span></div>
+    <div class="hcard"><span class="num" id="v-areas">0</span><span class="lbl">Ski areas represented</span></div>
+  </div>
+  <div class="part-line" id="part"></div>
+
+  <!-- 01 How people feel about AI -->
+  <div class="sec" id="s1">
+    <div class="sec-hdr"><span class="sec-n">01</span><span class="sec-t">How people feel about AI</span></div>
+    <div class="opener">
       <div class="card">
-        <div class="card-label">Ski area size</div>
-        <div class="chart-wrap donut-chart"><canvas id="chart-size"></canvas></div>
+        <div class="card-lbl">Sentiment</div>
+        <div class="cw donut-lg"><canvas id="ch-sent"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-label">Ski areas represented</div>
-        <div class="chart-wrap bar-chart-tall"><canvas id="chart-areas"></canvas></div>
-        <div class="card-label" style="margin-top:20px">Departments</div>
-        <div class="pill-grid" id="departments"></div>
+        <div class="card-lbl">In their own words</div>
+        <div class="quotes" id="quotes"></div>
       </div>
     </div>
   </div>
 
-  <!-- Section 2: Where you are with AI -->
-  <div class="section" id="sec-where">
-    <div class="section-header"><span class="section-number">02</span><span class="section-title">Where you are with AI</span></div>
-    <div class="section-grid cols-2">
+  <!-- 02 What people are actually using AI for -->
+  <div class="sec" id="s2">
+    <div class="sec-hdr"><span class="sec-n">02</span><span class="sec-t">What people are actually using AI for</span></div>
+    <div class="grid">
       <div class="card">
-        <div class="card-label">AI maturity</div>
-        <div class="chart-wrap bar-chart-tall"><canvas id="chart-maturity"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-label">How often you use AI</div>
-        <div class="chart-wrap bar-chart-tall"><canvas id="chart-frequency"></canvas></div>
+        <div class="card-lbl">Use cases</div>
+        <div class="cw bar"><canvas id="ch-cases"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- Section 3: What you're using -->
-  <div class="section" id="sec-tools">
-    <div class="section-header"><span class="section-number">03</span><span class="section-title">What you're using</span></div>
-    <div class="section-grid cols-2">
+  <!-- 03 Where people are on the AI journey -->
+  <div class="sec" id="s3">
+    <div class="sec-hdr"><span class="sec-n">03</span><span class="sec-t">Where people are on the AI journey</span></div>
+    <div class="grid c2">
       <div class="card">
-        <div class="card-label">AI tools</div>
-        <div class="chart-wrap bar-chart-tall"><canvas id="chart-tools"></canvas></div>
+        <div class="card-lbl">AI stage</div>
+        <div class="cw bar"><canvas id="ch-mat"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-label">Paid subscriptions</div>
-        <div class="chart-wrap bar-chart-tall"><canvas id="chart-subs"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 4: What you're doing with it -->
-  <div class="section" id="sec-doing">
-    <div class="section-header"><span class="section-number">04</span><span class="section-title">What you're doing with it</span></div>
-    <div class="section-grid">
-      <div class="card">
-        <div class="card-label">Use cases</div>
-        <div class="chart-wrap bar-chart-tall"><canvas id="chart-cases"></canvas></div>
+        <div class="card-lbl">How often they use AI</div>
+        <div class="cw bar"><canvas id="ch-freq"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- Section 5: What's next -->
-  <div class="section" id="sec-next">
-    <div class="section-header"><span class="section-number">05</span><span class="section-title">What's next</span></div>
-    <div class="section-grid cols-3">
+  <!-- 04 Reusable assets -->
+  <div class="sec" id="s4">
+    <div class="sec-hdr"><span class="sec-n">04</span><span class="sec-t">Reusable assets</span></div>
+    <div class="asset-grid" id="assets"></div>
+  </div>
+
+  <!-- 05 Which tools (supporting) -->
+  <div class="sec supporting" id="s5">
+    <div class="sec-hdr"><span class="sec-n">05</span><span class="sec-t">Which tools are in use</span></div>
+    <div class="grid">
       <div class="card">
-        <div class="card-label">How you feel about AI</div>
-        <div class="chart-wrap donut-chart"><canvas id="chart-sentiment"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-label">Built anything custom?</div>
-        <div class="setup-stats" id="setup-stats"></div>
-      </div>
-      <div class="card">
-        <div class="card-label">In your own words</div>
-        <div class="quotes-stack" id="quotes"></div>
+        <div class="cw bar-sm"><canvas id="ch-tools"></canvas></div>
       </div>
     </div>
   </div>
+
 </main>
 
 <script>
-// ─── Config ───
-const SHEET_URLS = [
+// ============================================================
+// Config
+// ============================================================
+var SHEET_URLS = [
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRItcZIGm06O7jz9h5QbSISnurrdKe-BUenN2vmTlXxXv7Wcn_QaLj96PwVDjZ8DpjzUrX69BwmYHbB/pub?output=csv',
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRItcZIGm06O7jz9h5QbSISnurrdKe-BUenN2vmTlXxXv7Wcn_QaLj96PwVDjZ8DpjzUrX69BwmYHbB/pub?gid=0&single=true&output=csv',
 ];
 
-const COLORS = {
-  ice:'#5DADE2', gold:'#E8B84B', teal:'#3DD6C8',
-  lavender:'#9B8EC4', coral:'#E07B6C', green:'#5DC77A', sky:'#7EC8E3',
-};
+var C = {ice:'#5DADE2',gold:'#E8B84B',teal:'#3DD6C8',lav:'#9B8EC4',coral:'#E07B6C',green:'#5DC77A',sky:'#7EC8E3'};
 
-const MATURITY_ORDER = [
+var MAT_ORDER = [
   'Curious but not sure where to start',
   'Building confidence with basic tools',
   'Testing multiple AI tools',
   'Built AI Agents/Custom GPTs',
   'Working with AI Automation/Agentic Systems',
 ];
-const MATURITY_SHORT = ['Curious','Building confidence','Testing multiple tools','Built agents/GPTs','AI Automation'];
-const MATURITY_COLORS = [COLORS.coral,'#D4915E',COLORS.gold,COLORS.ice,COLORS.teal];
+var MAT_SHORT = ['Curious','Building confidence','Testing multiple tools','Built agents/GPTs','AI Automation'];
+var MAT_COLORS = [C.coral,'#D4915E',C.gold,C.ice,C.teal];
 
-const FREQ_ORDER = ["Haven't started",'Few times/month','Few times/week','Daily','Multiple times/day'];
-const FREQ_SHORT = ["Haven't started",'Few times/month','Few times/week','Daily','Multiple times/day'];
-const FREQ_COLORS = [COLORS.coral,'#D4915E',COLORS.gold,COLORS.ice,COLORS.teal];
+var FRQ_ORDER = ["Haven't started",'Few times/month','Few times/week','Daily','Multiple times/day'];
+var FRQ_COLORS = [C.coral,'#D4915E',C.gold,C.ice,C.teal];
 
-const SENTIMENT_MAP = {Excited:COLORS.teal,'Interested/figuring out':COLORS.ice,'Neutral/conditional use':COLORS.lavender,Doubtful:COLORS.coral};
+var SENT_MAP = {Excited:C.teal,'Interested/figuring out':C.ice,'Neutral/conditional use':C.lav,Doubtful:C.coral};
 
-// ─── Fallback data ───
+var TOOL_KW = [
+  {l:'ChatGPT',r:/chatgpt/i},{l:'Copilot M365',r:/(copilot inside microsoft 365|copilot m365|m365 copilot)/i},
+  {l:'Copilot Chat',r:/copilot chat/i},{l:'Claude',r:/\bclaude\b/i},
+  {l:'Gemini',r:/\bgemini\b/i},{l:'NotebookLM',r:/notebook/i},
+  {l:'Julius AI',r:/julius/i},
+];
+var CASE_KW = [
+  {l:'Writing',r:/writ/i},{l:'Information finding',r:/info/i},
+  {l:'Summarising',r:/summar/i},{l:'Analysis',r:/analy/i},
+  {l:'Brainstorming',r:/brain/i},{l:'Problem solving',r:/problem/i},
+  {l:'Coding',r:/cod/i},{l:'Task automation',r:/task|repetit/i},
+  {l:'Image creation',r:/image/i},{l:'Training',r:/train/i},
+];
+
+// ============================================================
+// Fallback data
+// ============================================================
 const FALLBACK = [
   {maturity:"Building confidence with basic tools",frequency:"Few times/week",tools:"ChatGPT",subs:"ChatGPT Teams/Plus",useCases:"Content writing, information finding, problem-solving",setup:"Haven't set up",sentiment:"Excited",concerns:"",comments:"",isSmall:false,isMedium:true,isLarge:true,skiArea:"Cardrona/TC",department:"Retail"},
   {maturity:"Built AI Agents/Custom GPTs",frequency:"Daily",tools:"Copilot M365, ChatGPT, Julius AI",subs:"ChatGPT Teams/Plus, Other",useCases:"data analysis, writing, summarizing, brainstorming, problem-solving",setup:"Yes, set one up",sentiment:"Excited",concerns:"AI is a tool not a means to doing my job",comments:"",isSmall:false,isMedium:true,isLarge:false,skiArea:"Whakapapa",department:"Operations"},
@@ -323,12 +324,14 @@ const FALLBACK = [
   {maturity:"Built AI Agents/Custom GPTs",frequency:"Multiple times/day",tools:"Copilot M365, Copilot chat, Gemini Workspace, ChatGPT",subs:"M365 Premium",useCases:"Writing, information, summarizing, analysis, brainstorming, problem-solving, coding, tasks",setup:"Haven't set up",sentiment:"Interested/figuring out",concerns:"",comments:"",isSmall:false,isMedium:false,isLarge:true,skiArea:"The Remarkables",department:"Management"},
 ];
 
-// ─── State ───
-let allData = [];
-let charts = {};
-let currentFilter = 'all';
+// ============================================================
+// State
+// ============================================================
+var allData = [], charts = {}, curFilter = 'all';
 
-// ─── Chart.js defaults ───
+// ============================================================
+// Chart.js setup
+// ============================================================
 Chart.defaults.color = '#8BA4C4';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.03)';
 Chart.defaults.font.family = "'DM Sans', sans-serif";
@@ -341,49 +344,33 @@ Chart.defaults.plugins.tooltip.borderWidth = 1;
 Chart.defaults.plugins.tooltip.padding = 12;
 Chart.defaults.plugins.tooltip.cornerRadius = 8;
 
-// Custom plugin: bar value labels
-const barLabelPlugin = {
+Chart.register({
   id:'barLabels',
-  afterDatasetsDraw(chart){
+  afterDatasetsDraw:function(chart){
     if(chart.config.type!=='bar') return;
-    const ctx = chart.ctx;
-    chart.data.datasets.forEach((ds,i)=>{
-      chart.getDatasetMeta(i).data.forEach((bar,j)=>{
-        const val = ds.data[j];
-        if(val>0){
-          ctx.save();
-          ctx.fillStyle='#C5D5E8';
-          ctx.font="600 12px 'Sora', sans-serif";
-          ctx.textAlign='left';
-          ctx.textBaseline='middle';
-          ctx.fillText(val, bar.x+8, bar.y);
-          ctx.restore();
-        }
+    var ctx=chart.ctx;
+    chart.data.datasets.forEach(function(ds,i){
+      chart.getDatasetMeta(i).data.forEach(function(bar,j){
+        var v=ds.data[j];
+        if(v>0){ctx.save();ctx.fillStyle='#C5D5E8';ctx.font="600 12px 'Sora',sans-serif";
+        ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(v,bar.x+8,bar.y);ctx.restore();}
       });
     });
   }
-};
-
-// Custom plugin: donut center text
-const centerTextPlugin = {
+},{
   id:'centerText',
-  afterDraw(chart){
-    if(chart.config.type!=='doughnut' || !chart.config.options?.plugins?.centerText) return;
-    const {ctx, chartArea:{width,height,top,left}} = chart;
-    const total = chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
-    ctx.save();
-    ctx.fillStyle='#EFF3F8';
-    ctx.font="700 32px 'Sora', sans-serif";
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillText(total, left+width/2, top+height/2 - 4);
-    ctx.restore();
+  afterDraw:function(chart){
+    if(chart.config.type!=='doughnut'||!chart.config.options.plugins.centerText) return;
+    var a=chart.chartArea, ctx=chart.ctx, t=chart.data.datasets[0].data.reduce(function(a,b){return a+b},0);
+    ctx.save();ctx.fillStyle='#EFF3F8';ctx.font="700 32px 'Sora',sans-serif";
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(t, a.left+a.width/2, a.top+a.height/2-4);ctx.restore();
   }
-};
+});
 
-Chart.register(barLabelPlugin, centerTextPlugin);
-
-// ─── Data processing ───
+// ============================================================
+// Data processing (reused from original)
+// ============================================================
 function cleanText(value){
   return String(value ?? '')
     .replace(/\u00A0/g, ' ')
@@ -545,280 +532,205 @@ function getSizeLabel(d){
   return 'Unknown size';
 }
 
-// ─── Chart rendering ───
-function destroyCharts(){
-  Object.values(charts).forEach(c=>c.destroy());
-  charts={};
-}
+// ============================================================
+// Chart helpers
+// ============================================================
+function kill(){Object.values(charts).forEach(function(c){c.destroy()});charts={}}
 
-function makeBar(id, labels, data, colors, horizontal=true){
-  const ctx = document.getElementById(id);
-  return new Chart(ctx, {
+function bar(id,labels,data,colors,h){
+  return new Chart(document.getElementById(id),{
     type:'bar',
-    data:{labels, datasets:[{data, backgroundColor:colors, borderRadius:6, borderSkipped:false, barThickness:22}]},
-    options:{
-      indexAxis: horizontal?'y':'x',
-      responsive:true, maintainAspectRatio:false,
+    data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderRadius:6,borderSkipped:false,barThickness:22}]},
+    options:{indexAxis:h===false?'x':'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{display:false},border:{display:false}},
-        y:{grid:{display:false},ticks:{color:'#C5D5E8',font:{size:12,family:"'DM Sans',sans-serif"},padding:4},border:{display:false}},
-      },
-      layout:{padding:{right:40}},
-    }
+      scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{display:false},border:{display:false}},
+              y:{grid:{display:false},ticks:{color:'#C5D5E8',font:{size:12,family:"'DM Sans',sans-serif"},padding:4},border:{display:false}}},
+      layout:{padding:{right:40}}}
   });
 }
 
-function makeDonut(id, labels, data, colors, showCenter=true){
-  const ctx = document.getElementById(id);
-  return new Chart(ctx, {
+function donut(id,labels,data,colors){
+  return new Chart(document.getElementById(id),{
     type:'doughnut',
-    data:{labels, datasets:[{data, backgroundColor:colors, borderColor:'rgba(6,13,24,0.6)',borderWidth:2,hoverBorderColor:'#fff',hoverOffset:6}]},
-    options:{
-      responsive:true, maintainAspectRatio:false, cutout:'62%',
-      plugins:{
-        centerText: showCenter,
-        legend:{position:'bottom',labels:{color:'#C5D5E8',padding:14,usePointStyle:true,pointStyleWidth:8,font:{size:12,family:"'DM Sans',sans-serif"}}},
-      },
-    }
+    data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderColor:'rgba(6,13,24,0.6)',borderWidth:2,hoverBorderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{centerText:true,
+        legend:{position:'bottom',labels:{color:'#C5D5E8',padding:14,usePointStyle:true,pointStyleWidth:8,
+          font:{size:12,family:"'DM Sans',sans-serif"}}}}}
   });
 }
 
-// ─── Render all ───
-function renderDashboard(data){
-  destroyCharts();
-  const n = data.length;
-
-  // Hero stats
-  const pct = (count) => n===0?0:Math.round(count/n*100);
-  const excitedN = data.filter(d=>d.sentiment==='Excited').length;
-  const chatgptN = data.filter(d=>/chatgpt/i.test(d.tools)).length;
-  const dailyN = data.filter(d=>d.frequency==='Daily'||d.frequency==='Multiple times/day').length;
-  animateValue('stat-total', n, false);
-  animateValue('stat-excited', pct(excitedN), true);
-  animateValue('stat-chatgpt', pct(chatgptN), true);
-  animateValue('stat-daily', pct(dailyN), true);
-
-  // Size donut
-  const sizeData = [
-    data.filter(d=>d.isSmall).length,
-    data.filter(d=>d.isMedium).length,
-    data.filter(d=>d.isLarge).length,
-  ];
-  charts.size = makeDonut('chart-size',['Small (<100k)','Medium (100–250k)','Large (250k+)'],sizeData,[COLORS.ice,COLORS.teal,COLORS.gold]);
-
-  // Ski areas bar chart
-  const areaCounts = {};
-  data.forEach(d=>{ const a=d.skiArea.trim(); if(a) areaCounts[a]=(areaCounts[a]||0)+1; });
-  const areaSorted = Object.entries(areaCounts).sort((a,b)=>b[1]-a[1]);
-  if(areaSorted.length>0){
-    charts.areas = makeBar('chart-areas', areaSorted.map(a=>a[0]), areaSorted.map(a=>a[1]),
-      areaSorted.map((_,i)=>[COLORS.ice,COLORS.teal,COLORS.gold,COLORS.sky,COLORS.lavender,COLORS.green,COLORS.coral][i%7]));
-  }
-
-  // Department pills
-  const depts = {};
-  data.forEach(d=>{ const dep=d.department.trim(); if(dep) depts[dep]=(depts[dep]||0)+1; });
-  const deptSorted = Object.entries(depts).sort((a,b)=>b[1]-a[1]);
-  const deptContainer = document.getElementById('departments');
-  deptContainer.innerHTML = deptSorted.map(([name,count])=>{
-    return `<span class="pill">${name}${count>1?' <strong>×'+count+'</strong>':''}</span>`;
-  }).join('');
-
-  // Maturity
-  const maturityData = countBy(data,'maturity',MATURITY_ORDER);
-  charts.maturity = makeBar('chart-maturity', MATURITY_SHORT, maturityData, MATURITY_COLORS);
-
-  // Frequency
-  const freqData = countBy(data,'frequency',FREQ_ORDER);
-  charts.frequency = makeBar('chart-frequency', FREQ_SHORT, freqData, FREQ_COLORS);
-
-  // Tools
-  const toolCounts = TOOL_KEYWORDS.map(k=>({label:k.label, count:data.filter(d=>k.re.test(d.tools)).length}))
-    .sort((a,b)=>b.count-a.count);
-  charts.tools = makeBar('chart-tools', toolCounts.map(t=>t.label), toolCounts.map(t=>t.count),
-    toolCounts.map((_,i)=>[COLORS.ice,COLORS.teal,COLORS.gold,COLORS.sky,COLORS.lavender,COLORS.green,COLORS.coral][i%7]));
-
-  // Subscriptions
-  const subCounts = SUB_KEYWORDS.map(k=>({label:k.label, count:data.filter(d=>k.re.test(d.subs)).length}))
-    .sort((a,b)=>b.count-a.count);
-  charts.subs = makeBar('chart-subs', subCounts.map(s=>s.label), subCounts.map(s=>s.count),
-    subCounts.map((_,i)=>[COLORS.gold,COLORS.ice,COLORS.teal,COLORS.lavender,COLORS.coral][i%5]));
-
-  // Use cases
-  const caseCounts = CASE_KEYWORDS.map(k=>({label:k.label, count:data.filter(d=>k.re.test(d.useCases)).length}))
-    .sort((a,b)=>b.count-a.count);
-  charts.cases = makeBar('chart-cases', caseCounts.map(c=>c.label), caseCounts.map(c=>c.count),
-    caseCounts.map((_,i)=>[COLORS.ice,COLORS.teal,COLORS.gold,COLORS.sky,COLORS.lavender,COLORS.green,COLORS.coral,'#D4915E',COLORS.coral,'#8BC7A3'][i%10]));
-
-  // Sentiment donut
-  const sentLabels = Object.keys(SENTIMENT_MAP);
-  const sentData = sentLabels.map(s=>data.filter(d=>d.sentiment===s).length);
-  const sentColors = sentLabels.map(s=>SENTIMENT_MAP[s]);
-  charts.sentiment = makeDonut('chart-sentiment', sentLabels, sentData, sentColors);
-
-  // Setup stats
-  const setupContainer = document.getElementById('setup-stats');
-  const builtCount = data.filter(d=>d.setup==='Yes, set one up').length;
-  const interestedCount = data.filter(d=>d.setup==='Interested but new info').length;
-  const notYetCount = data.filter(d=>d.setup==="Heard of it, not set up").length;
-  const noneCount = data.filter(d=>d.setup==='None').length;
-  setupContainer.innerHTML = `
-    <div class="setup-stat"><span class="stat-val" style="color:${COLORS.teal}">${builtCount}</span><span class="stat-desc">Have built something custom</span></div>
-    <div class="setup-stat"><span class="stat-val" style="color:${COLORS.ice}">${interestedCount}</span><span class="stat-desc">Interested but haven't yet</span></div>
-    <div class="setup-stat"><span class="stat-val" style="color:${COLORS.lavender}">${notYetCount}</span><span class="stat-desc">Haven't set up anything</span></div>
-    ${noneCount?`<div class="setup-stat"><span class="stat-val" style="color:${COLORS.coral}">${noneCount}</span><span class="stat-desc">No experience</span></div>`:''}
-  `;
-
-  // Quotes
-  const quotesContainer = document.getElementById('quotes');
-  const quotes = data
-    .map(d=>({text:d.concerns, size:getSizeLabel(d)}))
-    .filter(q=>q.text && !/^none$/i.test(q.text) && q.text.length>5);
-  quotesContainer.innerHTML = quotes.length===0
-    ? '<p style="color:var(--text-muted);font-size:14px">No concerns shared in this group</p>'
-    : quotes.map(q=>`<div class="quote-card">"${q.text}"<span class="quote-attr">— ${q.size} ski area</span></div>`).join('');
+// ============================================================
+// Render
+// ============================================================
+function countBy(data,key,order){
+  var c={};order.forEach(function(k){c[k]=0});
+  data.forEach(function(d){if(c.hasOwnProperty(d[key]))c[d[key]]++});
+  return order.map(function(k){return c[k]});
 }
 
-// ─── Counter animation ───
-function animateValue(id, target, isPercent){
-  const el = document.getElementById(id);
-  const duration = 1200;
-  let start = null;
-  const step = ts => {
-    if(!start) start = ts;
-    const progress = Math.min((ts-start)/duration, 1);
-    const eased = 1 - Math.pow(1-progress, 3);
-    const val = Math.round(eased * target);
-    el.textContent = isPercent ? val+'%' : val;
-    if(progress<1) requestAnimationFrame(step);
-  };
+function render(data){
+  kill();
+  var n=data.length;
+  var pct=function(v){return n===0?0:Math.round(v/n*100)};
+
+  // Hero
+  var excN=data.filter(function(d){return d.sentiment==='Excited'}).length;
+  var dayN=data.filter(function(d){return d.frequency==='Daily'||d.frequency==='Multiple times/day'}).length;
+  var areas=new Set(data.map(function(d){return d.skiArea.trim()}).filter(Boolean));
+  anim('v-total',n,false); anim('v-excited',pct(excN),true);
+  anim('v-daily',pct(dayN),true); anim('v-areas',areas.size,false);
+
+  // Participation line
+  var depts={};
+  data.forEach(function(d){var dep=d.department.trim();if(dep)depts[dep]=(depts[dep]||0)+1});
+  var aList=[...areas].sort(), parts=[];
+  if(aList.length) parts.push('<span>'+aList.join('</span>, <span>')+'</span>');
+  if(Object.keys(depts).length) parts.push('across <span>'+Object.keys(depts).length+'</span> departments');
+  document.getElementById('part').innerHTML=parts.join(' ');
+
+  // 01 Sentiment
+  var sLab=Object.keys(SENT_MAP);
+  var sData=sLab.map(function(s){return data.filter(function(d){return d.sentiment===s}).length});
+  var sCol=sLab.map(function(s){return SENT_MAP[s]});
+  charts.sent=donut('ch-sent',sLab,sData,sCol);
+
+  // 01 Quotes — ONLY from concerns (column K: "Your Qs, Uncertainties, Worries")
+  var qc=document.getElementById('quotes');
+  var qs=data.map(function(d){return{text:d.concerns,size:getSizeLabel(d)}})
+    .filter(function(q){return q.text&&!/^none$/i.test(q.text)&&q.text.length>5});
+  qc.innerHTML=qs.length===0
+    ?'<p style="color:var(--text-muted);font-size:14px">No concerns shared in this group</p>'
+    :qs.map(function(q){return'<div class="qcard">\u201C'+q.text+'\u201D<span class="qattr">\u2014 '+q.size+' ski area</span></div>'}).join('');
+
+  // 02 Use cases
+  var cc=CASE_KW.map(function(k){return{l:k.l,c:data.filter(function(d){return k.r.test(d.useCases)}).length}})
+    .sort(function(a,b){return b.c-a.c});
+  var ccCol=[C.ice,C.teal,C.gold,C.sky,C.lav,C.green,C.coral,'#D4915E',C.coral,'#8BC7A3'];
+  charts.cases=bar('ch-cases',cc.map(function(x){return x.l}),cc.map(function(x){return x.c}),
+    cc.map(function(_,i){return ccCol[i%10]}));
+
+  // 03 Journey
+  charts.mat=bar('ch-mat',MAT_SHORT,countBy(data,'maturity',MAT_ORDER),MAT_COLORS);
+  charts.freq=bar('ch-freq',FRQ_ORDER,countBy(data,'frequency',FRQ_ORDER),FRQ_COLORS);
+
+  // 04 Reusable assets
+  var built=data.filter(function(d){return d.setup==='Yes, set one up'}).length;
+  var notBuilt=n-built;
+  document.getElementById('assets').innerHTML=
+    '<div class="acard yes"><span class="anum">'+built+'</span>'+
+    '<span class="albl">Have created custom GPTs, Gems, or similar reusable assets</span></div>'+
+    '<div class="acard opp"><span class="anum">'+notBuilt+'</span>'+
+    "<span class=\"albl\">Haven't yet \u2014 this is the workshop opportunity</span></div>";
+
+  // 05 Tools
+  var tc=TOOL_KW.map(function(k){return{l:k.l,c:data.filter(function(d){return k.r.test(d.tools)}).length}})
+    .sort(function(a,b){return b.c-a.c});
+  charts.tools=bar('ch-tools',tc.map(function(x){return x.l}),tc.map(function(x){return x.c}),
+    tc.map(function(_,i){return[C.ice,C.teal,C.gold,C.sky,C.lav,C.green,C.coral][i%7]}));
+}
+
+// ============================================================
+// Utilities
+// ============================================================
+function anim(id,target,isPct){
+  var el=document.getElementById(id),dur=1200,start=null;
+  function step(ts){
+    if(!start)start=ts;
+    var p=Math.min((ts-start)/dur,1), e=1-Math.pow(1-p,3), v=Math.round(e*target);
+    el.textContent=isPct?v+'%':v;
+    if(p<1)requestAnimationFrame(step);
+  }
   requestAnimationFrame(step);
 }
 
-// ─── Filter logic ───
-document.getElementById('filters').addEventListener('click', e=>{
-  const btn = e.target.closest('.filter-btn');
-  if(!btn) return;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById('filters').addEventListener('click',function(e){
+  var btn=e.target.closest('.fbtn');if(!btn)return;
+  document.querySelectorAll('.fbtn').forEach(function(b){b.classList.remove('active')});
   btn.classList.add('active');
-  currentFilter = btn.dataset.filter;
-  renderDashboard(filterData(allData, currentFilter));
+  curFilter=btn.dataset.filter;
+  render(filterData(allData,curFilter));
 });
 
-// ─── Snow particles ───
-function createSnow(){
-  const container = document.getElementById('snow');
-  for(let i=0;i<25;i++){
-    const p = document.createElement('div');
-    p.className='snow-particle';
-    p.style.left = Math.random()*100+'%';
-    const size = Math.random()*2.5+1;
-    p.style.width = p.style.height = size+'px';
-    p.style.animationDuration = (Math.random()*25+18)+'s';
-    p.style.animationDelay = (Math.random()*25)+'s';
-    p.style.opacity = Math.random()*0.25+0.08;
-    container.appendChild(p);
+function mkSnow(){
+  var box=document.getElementById('snow');
+  for(var i=0;i<25;i++){
+    var p=document.createElement('div');p.className='snow';
+    p.style.left=Math.random()*100+'%';
+    var sz=Math.random()*2.5+1;p.style.width=p.style.height=sz+'px';
+    p.style.animationDuration=(Math.random()*25+18)+'s';
+    p.style.animationDelay=(Math.random()*25)+'s';
+    p.style.opacity=Math.random()*0.25+0.08;
+    box.appendChild(p);
   }
 }
 
-// ─── Section nav scroll spy ───
-function setupScrollSpy(){
-  const sections = ['hero-section','sec-who','sec-where','sec-tools','sec-doing','sec-next'];
-  const dots = document.querySelectorAll('.nav-dot');
-  const observer = new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const idx = sections.indexOf(entry.target.id);
-        if(idx>=0){
-          dots.forEach(d=>d.classList.remove('active'));
-          dots[idx].classList.add('active');
-        }
+// Scroll spy + keyboard
+(function(){
+  var ids=['s0','s1','s2','s3','s4','s5'];
+  var dots=document.querySelectorAll('.dot');
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        var idx=ids.indexOf(en.target.id);
+        if(idx>=0){dots.forEach(function(d){d.classList.remove('active')});dots[idx].classList.add('active');}
       }
     });
   },{threshold:0.3});
-  sections.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) observer.observe(el);
+  ids.forEach(function(id){var el=document.getElementById(id);if(el)obs.observe(el)});
+
+  document.addEventListener('keydown',function(e){
+    var ad=document.querySelector('.dot.active'),dl=[...document.querySelectorAll('.dot')],ix=dl.indexOf(ad);
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();
+      document.getElementById(ids[Math.min(ix+1,ids.length-1)])?.scrollIntoView({behavior:'smooth'});}
+    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();
+      document.getElementById(ids[Math.max(ix-1,0)])?.scrollIntoView({behavior:'smooth'});}
   });
-}
+})();
 
-// ─── Keyboard nav ───
-document.addEventListener('keydown', e=>{
-  const sections = ['hero-section','sec-who','sec-where','sec-tools','sec-doing','sec-next'];
-  const activeDot = document.querySelector('.nav-dot.active');
-  const dots = [...document.querySelectorAll('.nav-dot')];
-  const idx = dots.indexOf(activeDot);
-  if(e.key==='ArrowDown'||e.key==='ArrowRight'){
-    e.preventDefault();
-    const next = Math.min(idx+1, sections.length-1);
-    document.getElementById(sections[next])?.scrollIntoView({behavior:'smooth'});
-  }
-  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
-    e.preventDefault();
-    const prev = Math.max(idx-1, 0);
-    document.getElementById(sections[prev])?.scrollIntoView({behavior:'smooth'});
-  }
-});
-
-// ─── Init ───
-async function init(){
-  createSnow();
-  setupScrollSpy();
-
-  // Try live fetch, fall back to embedded data
-  let dataSource = 'fallback';
-  try {
-    let lastError = null;
-    for(const url of SHEET_URLS){
+// ============================================================
+// Init
+// ============================================================
+(async function(){
+  mkSnow();
+  var src='fallback';
+  try{
+    var lastErr=null;
+    for(var u of SHEET_URLS){
       try{
-        const resp = await fetch(url);
-        if(!resp.ok) throw new Error('HTTP ' + resp.status);
-        const csv = await resp.text();
-        if(csv.length < 50 || csv.trimStart().startsWith('<')) throw new Error('Response is not CSV');
-        const parsed = Papa.parse(csv, {skipEmptyLines:true});
-        if(!parsed.data || parsed.data.length < 2) throw new Error('No data rows parsed');
-        const columns = mapColumns(parsed.data[0]);
-        const mapped = parsed.data
-          .slice(1)
-          .map(row => parseCSVRow(row, columns))
-          .filter(row => row.maturity || row.frequency || row.tools || row.sentiment || row.skiArea);
-        if(!mapped.length) throw new Error('No mapped responses');
-        if(!mapped.some(row => row.sentiment) || !mapped.some(row => row.maturity)) throw new Error('Column mapping failed');
-        allData = mapped;
-        dataSource = 'live (' + allData.length + ' responses)';
-        lastError = null;
-        break;
-      }catch(fetchError){
-        lastError = fetchError;
-      }
+        var resp=await fetch(u);if(!resp.ok)throw new Error('HTTP '+resp.status);
+        var csv=await resp.text();
+        if(csv.length<50||csv.trimStart().startsWith('<'))throw new Error('Not CSV');
+        var parsed=Papa.parse(csv,{skipEmptyLines:true});
+        if(!parsed.data||parsed.data.length<2)throw new Error('No rows');
+        var cols=mapColumns(parsed.data[0]);
+        var mapped=parsed.data.slice(1).map(function(r){return parseCSVRow(r,cols)})
+          .filter(function(r){return r.maturity||r.frequency||r.tools||r.sentiment||r.skiArea});
+        if(!mapped.length)throw new Error('No mapped');
+        if(!mapped.some(function(r){return r.sentiment})||!mapped.some(function(r){return r.maturity}))throw new Error('Col map fail');
+        allData=mapped; src='live ('+allData.length+' responses)'; lastErr=null; break;
+      }catch(fe){lastErr=fe}
     }
-    if(lastError) throw lastError;
-  } catch(e){
-    console.warn('Live fetch failed, using fallback:', e.message);
-    allData = FALLBACK;
-    dataSource = 'fallback (last sync: 21 responses)';
+    if(lastErr)throw lastErr;
+  }catch(e){
+    console.warn('Live fetch failed, using fallback:',e.message);
+    allData=FALLBACK; src='fallback (last sync: 21 responses)';
   }
 
-  // Update filter counts
-  document.getElementById('count-all').textContent = `(${allData.length})`;
-  document.getElementById('count-small').textContent = `(${allData.filter(d=>d.isSmall).length})`;
-  document.getElementById('count-medium').textContent = `(${allData.filter(d=>d.isMedium).length})`;
-  document.getElementById('count-large').textContent = `(${allData.filter(d=>d.isLarge).length})`;
+  document.getElementById('ct-all').textContent='('+allData.length+')';
+  document.getElementById('ct-sm').textContent='('+allData.filter(function(d){return d.isSmall}).length+')';
+  document.getElementById('ct-md').textContent='('+allData.filter(function(d){return d.isMedium}).length+')';
+  document.getElementById('ct-lg').textContent='('+allData.filter(function(d){return d.isLarge}).length+')';
 
-  renderDashboard(allData);
+  render(allData);
 
-  // Show data source indicator
-  const badge = document.createElement('div');
-  badge.style.cssText = 'position:fixed;bottom:12px;left:12px;z-index:200;font-size:11px;color:var(--text-muted);font-family:DM Sans,sans-serif;opacity:0.6';
-  badge.textContent = 'Data: ' + dataSource;
+  var badge=document.createElement('div');
+  badge.style.cssText='position:fixed;bottom:12px;left:12px;z-index:200;font-size:11px;color:var(--text-muted);font-family:DM Sans,sans-serif;opacity:0.6';
+  badge.textContent='Data: '+src;
   document.body.appendChild(badge);
 
-  // Hide loader
-  setTimeout(()=> document.getElementById('loader').classList.add('hidden'), 400);
-}
-
-init();
+  setTimeout(function(){document.getElementById('loader').classList.add('hidden')},400);
+})();
 </script>
 </body>
 </html>
