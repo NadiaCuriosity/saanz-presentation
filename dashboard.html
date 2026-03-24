@@ -413,6 +413,12 @@ function findColumnIndex(headers, candidates){
 
 function mapColumns(headerRow){
   const headers = headerRow.map(normalizeHeader);
+  const sizeTextIndex = headers.findIndex(header =>
+    header.includes('ski area size') &&
+    !header.includes('small') &&
+    !header.includes('medium') &&
+    !header.includes('large')
+  );
   return {
     maturity: findColumnIndex(headers, [['relationship with ai'], ['current relationship', 'ai']]),
     frequency: findColumnIndex(headers, [['regularly do you use ai'], ['how regularly', 'use ai']]),
@@ -423,6 +429,7 @@ function mapColumns(headerRow){
     sentiment: findColumnIndex(headers, [['feel about ai'], ['best describes how you feel']]),
     concerns: findColumnIndex(headers, [['questions, uncertainties or worries'], ['worries do you have']]),
     comments: findColumnIndex(headers, [["questions you'd like me to cover"], ['any questions']]),
+    sizeText: sizeTextIndex,
     isSmall: findColumnIndex(headers, [['ski area size', 'small']]),
     isMedium: findColumnIndex(headers, [['ski area size', 'medium']]),
     isLarge: findColumnIndex(headers, [['ski area size', 'large']]),
@@ -478,7 +485,22 @@ function normalizeSentiment(value){
   return cleanText(value);
 }
 
+function normalizeSizeCategory(sizeText, isSmall, isMedium, isLarge){
+  const normalized = cleanText(sizeText).toLowerCase();
+  if(normalized.includes('large')) return 'Large';
+  if(normalized.includes('medium')) return 'Medium';
+  if(normalized.includes('small')) return 'Small';
+  if(isLarge) return 'Large';
+  if(isMedium) return 'Medium';
+  if(isSmall) return 'Small';
+  return '';
+}
+
 function parseCSVRow(row, columns){
+  const rawIsSmall = getBoolField(row, columns, 'isSmall');
+  const rawIsMedium = getBoolField(row, columns, 'isMedium');
+  const rawIsLarge = getBoolField(row, columns, 'isLarge');
+  const sizeCategory = normalizeSizeCategory(getField(row, columns, 'sizeText'), rawIsSmall, rawIsMedium, rawIsLarge);
   return {
     maturity: normalizeMaturity(getField(row, columns, 'maturity')),
     frequency: normalizeFrequency(getField(row, columns, 'frequency')),
@@ -489,9 +511,10 @@ function parseCSVRow(row, columns){
     sentiment: normalizeSentiment(getField(row, columns, 'sentiment')),
     concerns: getField(row, columns, 'concerns'),
     comments: getField(row, columns, 'comments'),
-    isSmall: getBoolField(row, columns, 'isSmall'),
-    isMedium: getBoolField(row, columns, 'isMedium'),
-    isLarge: getBoolField(row, columns, 'isLarge'),
+    sizeCategory,
+    isSmall: sizeCategory === 'Small',
+    isMedium: sizeCategory === 'Medium',
+    isLarge: sizeCategory === 'Large',
     skiArea: getField(row, columns, 'skiArea'),
     department: getField(row, columns, 'department'),
   };
@@ -499,7 +522,8 @@ function parseCSVRow(row, columns){
 
 function filterData(data, filter){
   if(filter==='all') return data;
-  return data.filter(d => filter==='small'?d.isSmall : filter==='medium'?d.isMedium : d.isLarge);
+  const target = filter.charAt(0).toUpperCase() + filter.slice(1);
+  return data.filter(d => d.sizeCategory === target);
 }
 
 function countBy(data, key, order){
@@ -539,9 +563,7 @@ const CASE_KEYWORDS = [
 ];
 
 function getSizeLabel(d){
-  if(d.isSmall) return 'Small';
-  if(d.isMedium) return 'Medium';
-  return 'Large';
+  return d.sizeCategory || 'Unknown size';
 }
 
 // ─── Chart rendering ───
