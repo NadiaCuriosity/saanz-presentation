@@ -673,16 +673,25 @@ async function init(){
   setupScrollSpy();
 
   // Try live fetch, fall back to embedded data
+  let dataSource = 'fallback';
   try {
     const resp = await fetch(SHEET_URL);
-    if(!resp.ok) throw new Error('Fetch failed');
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
     const csv = await resp.text();
+    // Guard against HTML error pages or empty responses
+    if(csv.length < 50 || csv.trimStart().startsWith('<')) throw new Error('Response is not CSV');
     const parsed = Papa.parse(csv, {skipEmptyLines:true});
-    const rows = parsed.data.slice(1); // skip header
-    allData = rows.map(parseCSVRow);
+    if(!parsed.data || parsed.data.length < 2) throw new Error('No data rows parsed');
+    const rows = parsed.data.slice(1);
+    const mapped = rows.map(parseCSVRow);
+    // Sanity check: first row should have a sentiment value
+    if(!mapped[0].sentiment) throw new Error('Column mapping failed');
+    allData = mapped;
+    dataSource = 'live (' + allData.length + ' responses)';
   } catch(e){
-    console.log('Using fallback data:', e.message);
+    console.warn('Live fetch failed, using fallback:', e.message);
     allData = FALLBACK;
+    dataSource = 'fallback (last sync: 21 responses)';
   }
 
   // Update filter counts
@@ -692,6 +701,12 @@ async function init(){
   document.getElementById('count-large').textContent = `(${allData.filter(d=>d.isLarge).length})`;
 
   renderDashboard(allData);
+
+  // Show data source indicator
+  const badge = document.createElement('div');
+  badge.style.cssText = 'position:fixed;bottom:12px;left:12px;z-index:200;font-size:11px;color:var(--text-muted);font-family:DM Sans,sans-serif;opacity:0.6';
+  badge.textContent = 'Data: ' + dataSource;
+  document.body.appendChild(badge);
 
   // Hide loader
   setTimeout(()=> document.getElementById('loader').classList.add('hidden'), 400);
