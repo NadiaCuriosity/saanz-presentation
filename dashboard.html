@@ -272,7 +272,10 @@ main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48p
 
 <script>
 // ─── Config ───
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRItcZIGm06O7jz9h5QbSISnurrdKe-BUenN2vmTlXxXv7Wcn_QaLj96PwVDjZ8DpjzUrX69BwmYHbB/pub?output=csv';
+const SHEET_URLS = [
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRItcZIGm06O7jz9h5QbSISnurrdKe-BUenN2vmTlXxXv7Wcn_QaLj96PwVDjZ8DpjzUrX69BwmYHbB/pub?output=csv',
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRItcZIGm06O7jz9h5QbSISnurrdKe-BUenN2vmTlXxXv7Wcn_QaLj96PwVDjZ8DpjzUrX69BwmYHbB/pub?gid=0&single=true&output=csv',
+];
 
 const COLORS = {
   ice:'#5DADE2', gold:'#E8B84B', teal:'#3DD6C8',
@@ -381,22 +384,116 @@ const centerTextPlugin = {
 Chart.register(barLabelPlugin, centerTextPlugin);
 
 // ─── Data processing ───
-function parseCSVRow(row){
+function cleanText(value){
+  return String(value ?? '')
+    .replace(/\u00A0/g, ' ')
+    .replace(/[‘’]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/[–—]/g, '-')
+    .replace(/â/g, "'")
+    .replace(/â|â/g, '"')
+    .replace(/â|â/g, '-')
+    .replace(/â€¦/g, '...')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeHeader(value){
+  return cleanText(value).toLowerCase();
+}
+
+function findColumnIndex(headers, candidates){
+  for(const candidate of candidates){
+    const parts = Array.isArray(candidate) ? candidate : [candidate];
+    const index = headers.findIndex(header => parts.every(part => header.includes(part)));
+    if(index !== -1) return index;
+  }
+  return -1;
+}
+
+function mapColumns(headerRow){
+  const headers = headerRow.map(normalizeHeader);
   return {
-    maturity: row[3]||'',
-    frequency: row[4]||'',
-    tools: row[5]||'',
-    subs: row[6]||'',
-    useCases: row[7]||'',
-    setup: row[8]||'',
-    sentiment: row[9]||'',
-    concerns: row[10]||'',
-    comments: row[11]||'',
-    isSmall: String(row[13]).toUpperCase()==='TRUE',
-    isMedium: String(row[14]).toUpperCase()==='TRUE',
-    isLarge: String(row[15]).toUpperCase()==='TRUE',
-    skiArea: row[16]||'',
-    department: row[17]||'',
+    maturity: findColumnIndex(headers, [['relationship with ai'], ['current relationship', 'ai']]),
+    frequency: findColumnIndex(headers, [['regularly do you use ai'], ['how regularly', 'use ai']]),
+    tools: findColumnIndex(headers, [['ai tools do you use'], ['which ai tools']]),
+    subs: findColumnIndex(headers, [['paid subscription'], ['ai tool.. if so']]),
+    useCases: findColumnIndex(headers, [["when you've used ai"], ['tried using it for']]),
+    setup: findColumnIndex(headers, [['set up with specific instructions'], ['which best describes your experience']]),
+    sentiment: findColumnIndex(headers, [['feel about ai'], ['best describes how you feel']]),
+    concerns: findColumnIndex(headers, [['questions, uncertainties or worries'], ['worries do you have']]),
+    comments: findColumnIndex(headers, [["questions you'd like me to cover"], ['any questions']]),
+    isSmall: findColumnIndex(headers, [['ski area size', 'small']]),
+    isMedium: findColumnIndex(headers, [['ski area size', 'medium']]),
+    isLarge: findColumnIndex(headers, [['ski area size', 'large']]),
+    skiArea: findColumnIndex(headers, [['your details']]),
+    department: findColumnIndex(headers, [['department']]),
+  };
+}
+
+function getField(row, columns, key){
+  const index = columns[key];
+  return index >= 0 ? cleanText(row[index]) : '';
+}
+
+function getBoolField(row, columns, key){
+  return getField(row, columns, key).toUpperCase() === 'TRUE';
+}
+
+function normalizeMaturity(value){
+  const normalized = cleanText(value).toLowerCase();
+  if(normalized.includes('curious')) return 'Curious but not sure where to start';
+  if(normalized.includes('building confidence')) return 'Building confidence with basic tools';
+  if(normalized.includes('testing multiple')) return 'Testing multiple AI tools';
+  if(normalized.includes('built ai agents') || normalized.includes('custom gpts') || normalized.includes('gems')) return 'Built AI Agents/Custom GPTs';
+  if(normalized.includes('automation') || normalized.includes('agentic')) return 'Working with AI Automation/Agentic Systems';
+  return cleanText(value);
+}
+
+function normalizeFrequency(value){
+  const normalized = cleanText(value).toLowerCase();
+  if(normalized.includes("haven't really started") || normalized.includes('have not really started')) return "Haven't started";
+  if(normalized.includes('few times a month')) return 'Few times/month';
+  if(normalized.includes('few times a week')) return 'Few times/week';
+  if(normalized.includes('multiple times a day')) return 'Multiple times/day';
+  if(normalized === 'daily' || normalized.includes('daily')) return 'Daily';
+  return cleanText(value);
+}
+
+function normalizeSetup(value){
+  const normalized = cleanText(value).toLowerCase();
+  if(normalized.startsWith('yes')) return 'Yes, set one up';
+  if(normalized.includes('new information')) return 'Interested but new info';
+  if(normalized.includes("heard of this")) return "Heard of it, not set up";
+  if(normalized === 'none') return 'None';
+  return cleanText(value);
+}
+
+function normalizeSentiment(value){
+  const normalized = cleanText(value).toLowerCase();
+  if(normalized.startsWith('excited')) return 'Excited';
+  if(normalized.startsWith('interested')) return 'Interested/figuring out';
+  if(normalized.startsWith('neutral')) return 'Neutral/conditional use';
+  if(normalized.startsWith('doubtful')) return 'Doubtful';
+  return cleanText(value);
+}
+
+function parseCSVRow(row, columns){
+  return {
+    maturity: normalizeMaturity(getField(row, columns, 'maturity')),
+    frequency: normalizeFrequency(getField(row, columns, 'frequency')),
+    tools: getField(row, columns, 'tools'),
+    subs: getField(row, columns, 'subs'),
+    useCases: getField(row, columns, 'useCases'),
+    setup: normalizeSetup(getField(row, columns, 'setup')),
+    sentiment: normalizeSentiment(getField(row, columns, 'sentiment')),
+    concerns: getField(row, columns, 'concerns'),
+    comments: getField(row, columns, 'comments'),
+    isSmall: getBoolField(row, columns, 'isSmall'),
+    isMedium: getBoolField(row, columns, 'isMedium'),
+    isLarge: getBoolField(row, columns, 'isLarge'),
+    skiArea: getField(row, columns, 'skiArea'),
+    department: getField(row, columns, 'department'),
   };
 }
 
@@ -423,14 +520,14 @@ function countMulti(data, key, keywords){
 }
 
 const TOOL_KEYWORDS = [
-  {label:'ChatGPT',re:/chatgpt/i},{label:'Copilot M365',re:/copilot m365/i},
+  {label:'ChatGPT',re:/chatgpt/i},{label:'Copilot M365',re:/(copilot inside microsoft 365|copilot m365|m365 copilot)/i},
   {label:'Copilot Chat',re:/copilot chat/i},{label:'Claude',re:/\bclaude\b/i},
   {label:'Gemini',re:/\bgemini\b/i},{label:'NotebookLM',re:/notebook/i},
   {label:'Julius AI',re:/julius/i},
 ];
 const SUB_KEYWORDS = [
-  {label:'ChatGPT Teams/Plus',re:/chatgpt team/i},{label:'M365 Premium',re:/m365 prem/i},
-  {label:'Claude Pro/Max',re:/claude pro/i},{label:'Gemini Workspace',re:/gemini workspace/i},
+  {label:'ChatGPT Teams/Plus',re:/chatgpt.*(team|plus)/i},{label:'M365 Premium',re:/(m365.*premium|copilot premium)/i},
+  {label:'Claude Pro/Max',re:/claude.*(pro|max)/i},{label:'Gemini Workspace',re:/(gemini.*workspace|google workspace)/i},
   {label:'Other',re:/\bother\b/i},
 ];
 const CASE_KEYWORDS = [
@@ -561,10 +658,10 @@ function renderDashboard(data){
 
   // Setup stats
   const setupContainer = document.getElementById('setup-stats');
-  const builtCount = data.filter(d=>/yes/i.test(d.setup)).length;
-  const notYetCount = data.filter(d=>/haven't set up/i.test(d.setup) && !/new info/i.test(d.setup)).length;
-  const interestedCount = data.filter(d=>/new info/i.test(d.setup)).length;
-  const noneCount = data.filter(d=>/^none$/i.test(d.setup)).length;
+  const builtCount = data.filter(d=>d.setup==='Yes, set one up').length;
+  const interestedCount = data.filter(d=>d.setup==='Interested but new info').length;
+  const notYetCount = data.filter(d=>d.setup==="Heard of it, not set up").length;
+  const noneCount = data.filter(d=>d.setup==='None').length;
   setupContainer.innerHTML = `
     <div class="setup-stat"><span class="stat-val" style="color:${COLORS.teal}">${builtCount}</span><span class="stat-desc">Have built something custom</span></div>
     <div class="setup-stat"><span class="stat-val" style="color:${COLORS.ice}">${interestedCount}</span><span class="stat-desc">Interested but haven't yet</span></div>
@@ -675,19 +772,31 @@ async function init(){
   // Try live fetch, fall back to embedded data
   let dataSource = 'fallback';
   try {
-    const resp = await fetch(SHEET_URL);
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
-    const csv = await resp.text();
-    // Guard against HTML error pages or empty responses
-    if(csv.length < 50 || csv.trimStart().startsWith('<')) throw new Error('Response is not CSV');
-    const parsed = Papa.parse(csv, {skipEmptyLines:true});
-    if(!parsed.data || parsed.data.length < 2) throw new Error('No data rows parsed');
-    const rows = parsed.data.slice(1);
-    const mapped = rows.map(parseCSVRow);
-    // Sanity check: first row should have a sentiment value
-    if(!mapped[0].sentiment) throw new Error('Column mapping failed');
-    allData = mapped;
-    dataSource = 'live (' + allData.length + ' responses)';
+    let lastError = null;
+    for(const url of SHEET_URLS){
+      try{
+        const resp = await fetch(url);
+        if(!resp.ok) throw new Error('HTTP ' + resp.status);
+        const csv = await resp.text();
+        if(csv.length < 50 || csv.trimStart().startsWith('<')) throw new Error('Response is not CSV');
+        const parsed = Papa.parse(csv, {skipEmptyLines:true});
+        if(!parsed.data || parsed.data.length < 2) throw new Error('No data rows parsed');
+        const columns = mapColumns(parsed.data[0]);
+        const mapped = parsed.data
+          .slice(1)
+          .map(row => parseCSVRow(row, columns))
+          .filter(row => row.maturity || row.frequency || row.tools || row.sentiment || row.skiArea);
+        if(!mapped.length) throw new Error('No mapped responses');
+        if(!mapped.some(row => row.sentiment) || !mapped.some(row => row.maturity)) throw new Error('Column mapping failed');
+        allData = mapped;
+        dataSource = 'live (' + allData.length + ' responses)';
+        lastError = null;
+        break;
+      }catch(fetchError){
+        lastError = fetchError;
+      }
+    }
+    if(lastError) throw lastError;
   } catch(e){
     console.warn('Live fetch failed, using fallback:', e.message);
     allData = FALLBACK;
