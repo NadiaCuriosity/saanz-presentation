@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speaker Notes — AI for Ski Area Operators — SAANZ 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#060D18;--bg-card:rgba(12,30,55,0.82);--bg-card-solid:#0C1E37;
+  --text-primary:#EFF3F8;--text-secondary:#8BA4C4;--text-muted:#4A6B8A;
+  --accent-ice:#5DADE2;--accent-gold:#E8B84B;--accent-teal:#3DD6C8;
+  --border-subtle:rgba(93,173,226,0.10);--glow-ice:rgba(93,173,226,0.12);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;color:var(--text-primary);
+  min-height:100vh;
+  background:linear-gradient(175deg,#060D18 0%,#0B1829 40%,#0E2240 100%);
+  padding:0;overflow-x:hidden;line-height:1.6;
+}
+
+/* Snow */
+.snow-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.snow-particle{position:absolute;top:-6px;background:#fff;border-radius:50%;
+  animation:snowfall linear infinite;will-change:transform,opacity}
+@keyframes snowfall{
+  0%{transform:translateY(-10px) translateX(0);opacity:0}
+  8%{opacity:1}88%{opacity:1}
+  100%{transform:translateY(105vh) translateX(35px);opacity:0}
+}
+
+/* Header */
+.header{position:relative;z-index:1;text-align:center;padding:48px 24px 32px}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;
+  color:var(--text-secondary);text-decoration:none;margin-bottom:24px;
+  transition:color .2s}
+.back-link:hover{color:var(--accent-ice)}
+.back-link svg{width:16px;height:16px}
+.header h1{font-family:'Sora',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:700;
+  letter-spacing:-0.03em;line-height:1.15;margin-bottom:8px;
+  background:linear-gradient(135deg,#fff 0%,var(--accent-ice) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header .meta{font-size:14px;color:var(--text-secondary)}
+.header .meta strong{color:var(--text-primary);font-weight:600}
+
+/* Content */
+.content{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 24px 64px}
+
+/* Section nav */
+.section-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  margin-bottom:40px;padding:0 16px}
+.section-nav a{font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  color:var(--text-secondary);text-decoration:none;transition:all .2s;
+  letter-spacing:0.02em;text-transform:uppercase}
+.section-nav a:hover{border-color:rgba(93,173,226,0.3);color:var(--accent-ice)}
+
+/* Sections */
+.section{margin-bottom:48px}
+.section-title{font-family:'Sora',sans-serif;font-size:clamp(18px,3vw,22px);font-weight:700;
+  letter-spacing:-0.02em;margin-bottom:20px;padding-bottom:12px;
+  border-bottom:1px solid var(--border-subtle);color:var(--accent-ice)}
+
+/* Cards */
+.card{background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:16px;padding:24px;margin-bottom:16px;
+  transition:border-color .25s}
+.card:hover{border-color:rgba(93,173,226,0.2)}
+.card h3{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;
+  margin-bottom:8px;letter-spacing:-0.01em}
+.card p,.card li{font-size:14px;color:var(--text-secondary);line-height:1.55}
+.card strong{color:var(--text-primary);font-weight:600}
+.card .label{font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:0.04em;margin-bottom:4px;display:block}
+.label-ice{color:var(--accent-ice)}
+.label-teal{color:var(--accent-teal)}
+.label-gold{color:var(--accent-gold)}
+
+/* Glossary grid */
+.glossary-grid{display:grid;gap:12px}
+.glossary-item{background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:12px;padding:16px 20px}
+.glossary-item dt{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;
+  margin-bottom:4px;color:var(--accent-ice)}
+.glossary-item dd{font-size:13px;color:var(--text-secondary);line-height:1.5}
+
+/* Tools */
+.tool-card{background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:12px;padding:20px;margin-bottom:12px;
+  display:flex;gap:16px;align-items:flex-start}
+.tool-icon{width:40px;height:40px;border-radius:10px;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:700;
+  font-family:'Sora',sans-serif}
+.tool-card h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;margin-bottom:4px}
+.tool-card p{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.tool-card a{color:var(--accent-ice);text-decoration:none}
+.tool-card a:hover{text-decoration:underline}
+
+/* Tables */
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-family:'Sora',sans-serif;font-size:12px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.04em;color:var(--accent-ice);
+  text-align:left;padding:10px 16px;border-bottom:1px solid var(--border-subtle)}
+td{padding:12px 16px;border-bottom:1px solid rgba(93,173,226,0.05);
+  color:var(--text-secondary);vertical-align:top}
+td:first-child{color:var(--text-primary);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+
+/* Q&A */
+.qa-item{background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:12px;padding:20px;margin-bottom:12px}
+.qa-item .q{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;
+  margin-bottom:8px;display:flex;gap:8px}
+.qa-item .q::before{content:'Q';display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:6px;background:rgba(93,173,226,0.12);
+  color:var(--accent-ice);font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.qa-item .a{font-size:13px;color:var(--text-secondary);line-height:1.55;
+  padding-left:30px}
+
+/* Try next */
+.action-card{background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:14px;padding:22px 24px;margin-bottom:12px;
+  display:flex;gap:16px;align-items:flex-start}
+.action-num{width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(93,173,226,0.15),rgba(61,214,200,0.10));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--accent-ice)}
+.action-card h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;margin-bottom:4px}
+.action-card p{font-size:13px;color:var(--text-secondary);line-height:1.5}
+
+/* Quotes */
+.quote-card{background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-left:3px solid var(--accent-gold);border-radius:0 12px 12px 0;
+  padding:20px 24px;margin-bottom:12px}
+.quote-card blockquote{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;
+  line-height:1.45;margin-bottom:6px;color:var(--text-primary)}
+.quote-card .context{font-size:12px;color:var(--text-muted);font-style:italic}
+
+/* Dashboard callout */
+.callout{background:linear-gradient(135deg,rgba(93,173,226,0.08),rgba(61,214,200,0.06));
+  border:1px solid rgba(93,173,226,0.2);border-radius:16px;padding:28px;
+  text-align:center;margin-bottom:16px}
+.callout h3{font-family:'Sora',sans-serif;font-size:16px;font-weight:600;margin-bottom:8px}
+.callout p{font-size:14px;color:var(--text-secondary);margin-bottom:16px;line-height:1.5}
+.callout .btn{display:inline-flex;align-items:center;gap:8px;
+  padding:10px 22px;border-radius:100px;font-size:13px;font-weight:600;
+  text-decoration:none;transition:all .2s;font-family:'Sora',sans-serif}
+.btn-ice{background:rgba(93,173,226,0.15);color:var(--accent-ice);
+  border:1px solid rgba(93,173,226,0.3)}
+.btn-ice:hover{background:rgba(93,173,226,0.25)}
+.btn-gold{background:rgba(232,184,75,0.10);color:var(--accent-gold);
+  border:1px solid rgba(232,184,75,0.25);margin-left:8px}
+.btn-gold:hover{background:rgba(232,184,75,0.20)}
+
+/* Subsection heading */
+.subsection{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;
+  color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;
+  margin:28px 0 14px}
+
+/* Footer */
+.footer{text-align:center;font-size:12px;color:var(--text-muted);
+  padding:24px;border-top:1px solid var(--border-subtle);margin-top:24px}
+.footer a{color:var(--text-secondary);text-decoration:none}
+.footer a:hover{color:var(--accent-ice)}
+
+@media(max-width:600px){
+  .section-nav{gap:6px}
+  .section-nav a{font-size:11px;padding:5px 10px}
+  .tool-card{flex-direction:column;gap:10px}
+  .action-card{flex-direction:column;gap:10px}
+  .callout .btn{display:block;margin:8px auto;width:fit-content}
+  .btn-gold{margin-left:0}
+}
+</style>
+</head>
+<body>
+
+<div class="snow-container" id="snow"></div>
+
+<div class="header">
+  <a class="back-link" href="index.html">
+    <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+    Back to hub
+  </a>
+  <h1>Speaker Notes</h1>
+  <p class="meta">SAANZ Conference 2026 &middot; <strong>Nadia Ellis</strong>, Curiosity</p>
+</div>
+
+<div class="content">
+
+  <nav class="section-nav">
+    <a href="#summary">Summary</a>
+    <a href="#glossary">Glossary</a>
+    <a href="#tools">Tools</a>
+    <a href="#concepts">Key Concepts</a>
+    <a href="#qa">Q&amp;A</a>
+    <a href="#try-next">Try This Next</a>
+    <a href="#quotes">Quotes</a>
+  </nav>
+
+  <!-- Summary -->
+  <div class="section" id="summary">
+    <h2 class="section-title">Summary</h2>
+    <div class="card">
+      <p>Most of us are using AI as a smart Google: type a question, get an answer, copy-paste it somewhere. That's the least exciting thing AI can do. The gap between what AI promises and what we've experienced isn't a technology problem, it's a briefing problem. We haven't told AI who we are, what our mountain is about, or what we need.</p>
+      <br>
+      <p>The session walked through a four-level AI spectrum (Ask &amp; Answer &rarr; AI Teammate &rarr; AI Workflow &rarr; AI Agent), a practical prompting framework (YETI), and a live demo showing how voice-first interaction produces dramatically better results. For ski area operators who spend their days on the mountain rather than at a desk, talking to AI is the single biggest unlock.</p>
+      <br>
+      <p><strong>The core message:</strong> AI, applied well, doesn't replace the people who create the magic on the mountain. It protects them by stripping away repetitive work so they have the headspace to show up as their best selves.</p>
+    </div>
+  </div>
+
+  <!-- Glossary -->
+  <div class="section" id="glossary">
+    <h2 class="section-title">Glossary</h2>
+    <div class="glossary-grid">
+      <div class="glossary-item"><dt>LLM (Large Language Model)</dt><dd>The technology behind tools like ChatGPT, Claude, and Gemini. Trained on vast amounts of text to understand and generate language. Each update is called a new "model."</dd></div>
+      <div class="glossary-item"><dt>Context Window</dt><dd>How much information AI can hold in working memory at once. When you exceed it, the AI starts forgetting earlier parts of the conversation. Think of it like a meeting that's gone too long.</dd></div>
+      <div class="glossary-item"><dt>Thread</dt><dd>A single conversation with AI. Best practice: one topic per thread.</dd></div>
+      <div class="glossary-item"><dt>Custom GPT / Project / Gem / Skills</dt><dd>A saved set of instructions and knowledge files that persist across conversations. Think of it as onboarding your AI with a job description and reference materials so you don't have to repeat yourself.</dd></div>
+      <div class="glossary-item"><dt>Prompt</dt><dd>Any input you give to AI, whether typed, spoken, or uploaded as a file.</dd></div>
+      <div class="glossary-item"><dt>AI Slop</dt><dd>Generic, low-quality AI output. Usually caused by giving too little context or briefing.</dd></div>
+      <div class="glossary-item"><dt>Sycophancy</dt><dd>AI's tendency to agree with you and tell you you're amazing. Important to be aware of, especially when using AI as a thinking partner.</dd></div>
+      <div class="glossary-item"><dt>Training Data</dt><dd>The information AI was trained on, accurate up to a specific date. For current events, AI needs to use its web search tool.</dd></div>
+    </div>
+  </div>
+
+  <!-- Tools -->
+  <div class="section" id="tools">
+    <h2 class="section-title">Tools Mentioned</h2>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background:rgba(93,173,226,0.12);color:var(--accent-ice)">C</div>
+      <div>
+        <h3>ChatGPT (Paid, ~$40 NZD/month)</h3>
+        <p>Best voice mode. Custom GPTs for building AI teammates. Vast difference between free and paid versions. Free = older, less capable models.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background:rgba(232,184,75,0.12);color:var(--accent-gold)">Cl</div>
+      <div>
+        <h3>Claude / Claude Code</h3>
+        <p>Strong for agent-level tasks, file management, analysis, Excel generation. Built the survey dashboard shown in the session. Nadia's primary working tool.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background:rgba(61,214,200,0.12);color:var(--accent-teal)">G</div>
+      <div>
+        <h3>Gemini</h3>
+        <p>Best image generation. Free with Google Workspace (many organisations already have access and don't know it). Good web search.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background:rgba(93,173,226,0.12);color:var(--accent-ice)">M</div>
+      <div>
+        <h3>Microsoft 365 / Copilot</h3>
+        <p>Improving rapidly. Good if your organisation is already in the Microsoft ecosystem. Watch file permissions if using Copilot. The paid version is vastly better than free.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background:rgba(61,214,200,0.12);color:var(--accent-teal)">W</div>
+      <div>
+        <h3>WisprFlow</h3>
+        <p>Dictation tool for hands-free input. Highly recommended for operators who are on the move. Also works beautifully with Claude for dictating prompts. <a href="https://ref.wisprflow.ai/nadia-ellis">Try WisprFlow &rarr;</a></p>
+      </div>
+    </div>
+
+    <p class="subsection">Not mentioned in the session (but worth knowing)</p>
+    <div class="card">
+      <p style="margin-bottom:14px">When you're ready to move from AI Teammate to AI Workflow (triggered automations), you'll need an automation platform. These are the ones worth looking at:</p>
+      <p><strong><a href="https://relay.app/?via=nadia" style="color:var(--accent-ice);text-decoration:none">Relay App</a></strong> &mdash; Clean, intuitive automation platform. Great starting point for building AI workflows without a technical background.</p>
+      <br>
+      <p><strong><a href="https://cassidyai.com/?via=nadia" style="color:var(--accent-ice);text-decoration:none">Cassidy AI</a></strong> &mdash; AI-native automation platform designed specifically for building AI teammates and workflows for your business.</p>
+      <br>
+      <p><strong><a href="https://plaudau.pxf.io/NadiaAUNZ" style="color:var(--accent-ice);text-decoration:none">n8n</a></strong> &mdash; Powerful open-source automation platform. More technical, but extremely flexible. Good if you want full control.</p>
+      <br>
+      <p><strong>Power Automate</strong> &mdash; Available if you're in the Microsoft ecosystem. Functional, but clunky compared to the options above.</p>
+      <br>
+      <p><strong>Google AI Studio</strong> &mdash; Available if you're on Google Workspace. Similarly clunky.</p>
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="section" id="concepts">
+    <h2 class="section-title">Key Concepts</h2>
+
+    <div class="card">
+      <h3>The AI Spectrum</h3>
+      <span class="label label-ice">What it is</span>
+      <p>Four levels of AI use, from basic to autonomous.</p>
+      <br>
+      <span class="label label-teal">Why it matters</span>
+      <p>Knowing where you are helps you see the next step. Most of us are at level one.</p>
+      <br>
+      <span class="label label-gold">Key takeaway</span>
+      <p>Moving from Ask &amp; Answer to AI Teammate (giving AI context about your business) is the biggest value jump. 67% of survey respondents hadn't done this yet.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th>What it looks like</th></tr></thead>
+          <tbody>
+            <tr><td>Ask &amp; Answer</td><td>Type a question, get a response, copy-paste it somewhere</td></tr>
+            <tr><td>AI Teammate</td><td>AI knows your business, voice, and processes. Works with context</td></tr>
+            <tr><td>AI Workflow</td><td>Triggered actions that happen without you prompting</td></tr>
+            <tr><td>AI Agent</td><td>You give it a task. It decides how to do it and tells you when it's done</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>The Digital Teammate</h3>
+      <span class="label label-ice">What it is</span>
+      <p>AI is closer to working with a person than operating a spreadsheet. Treat it like a brilliant new seasonal hire: smart, eager, knows nothing about your mountain.</p>
+      <br>
+      <span class="label label-teal">Why it matters</span>
+      <p>If you give AI no context, you get the most generic, probable answer. Just like a new hire with no onboarding.</p>
+      <br>
+      <span class="label label-gold">Key takeaway</span>
+      <p>Brief your AI with context (who you are, what your mountain is about), a job description (how to behave, what to avoid), knowledge (SOPs, FAQs, brand guide), and one critical instruction: <strong>"If you're not sure, say so. Don't guess."</strong></p>
+    </div>
+
+    <div class="card">
+      <h3>The YETI Framework</h3>
+      <span class="label label-ice">What it is</span>
+      <p>A simple framework for getting quality AI outputs, especially using voice.</p>
+      <br>
+      <span class="label label-teal">Why it matters</span>
+      <p>Works in under 60 seconds. Eliminates the blank prompt problem.</p>
+      <br>
+      <span class="label label-gold">Key takeaway</span>
+      <p>Use this every time you need AI to do something meaningful.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Step</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td>Yarn</td><td>Give the full picture. Context, who you are, what the problem is, who it's for</td></tr>
+            <tr><td>Expertise</td><td>Tell it who to be. Data scientist, Kim Scott, organisational psychologist</td></tr>
+            <tr><td>Task</td><td>What you want it to produce. Be specific about format and stakes</td></tr>
+            <tr><td>Interview</td><td>"Ask me up to three questions, one at a time, to get the context you need"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Voice-First AI</h3>
+      <span class="label label-ice">What it is</span>
+      <p>Stop typing, start talking. AI understands natural speech and is excellent at taking unstructured verbal input and organising it.</p>
+      <br>
+      <span class="label label-teal">Why it matters</span>
+      <p>Ski area operators aren't at desks. You're on the mountain, in the rental shop, walking between buildings. Voice input matches your work reality.</p>
+      <br>
+      <span class="label label-gold">Key takeaway</span>
+      <p>Hit the microphone button every time. Brain dump while you're moving. Use it for hazard reports, meeting notes, email drafts, brain dumps.</p>
+    </div>
+
+    <div class="card">
+      <h3>Own the Playbook, Rent the Tech</h3>
+      <span class="label label-ice">What it is</span>
+      <p>Your processes, knowledge, brand voice, and operating models are the asset. The AI platform is just the delivery mechanism.</p>
+      <br>
+      <span class="label label-teal">Why it matters</span>
+      <p>Platforms change constantly. If your knowledge is documented and portable, you can move it anywhere.</p>
+      <br>
+      <span class="label label-gold">Key takeaway</span>
+      <p>Don't get locked into one platform. Invest in documenting your processes and knowledge, not learning one tool's interface.</p>
+    </div>
+
+    <div class="card">
+      <h3>Meeting Intelligence</h3>
+      <span class="label label-ice">What it is</span>
+      <p>Record a meeting &rarr; AI transcribes it &rarr; AI identifies what's relevant to each department &rarr; tailored summaries routed to the right channel automatically.</p>
+      <br>
+      <span class="label label-teal">Why it matters</span>
+      <p>No one should sit through a 90-minute recap to find the two things that matter to them.</p>
+      <br>
+      <span class="label label-gold">Key takeaway</span>
+      <p>This is achievable with current tools. The prerequisite is documenting what each department needs from meetings. <a href="meeting-intelligence-flow.html" style="color:var(--accent-ice);text-decoration:none">See the diagram &rarr;</a></p>
+    </div>
+  </div>
+
+  <!-- Q&A -->
+  <div class="section" id="qa">
+    <h2 class="section-title">Questions Raised</h2>
+
+    <div class="qa-item">
+      <div class="q"><span>Do you have to type, or can you scan/copy/drag files in?</span></div>
+      <div class="a">All of the above. Drag files, talk to it, take photos, paste screen grabs. AI can see images, hear voice, and process documents.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>Does AI remember what you've told it?</span></div>
+      <div class="a">Don't rely on memory across sessions, but it is getting better. If it's a recurring task, document your context in a Custom GPT or Project. One-off tasks don't need this.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>How do you move from basic use to automation (triggers, folders)?</span></div>
+      <div class="a">Automation platforms exist for this. The foundation is still good prompting and documenting your process step by step. You have to get the process out of your head first. See platform recommendations above.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>Is it worth paying for ChatGPT?</span></div>
+      <div class="a">Yes. Free versions use older, less capable models. ChatGPT Plus (~$40 NZD/month) unlocks smarter models, voice mode, Custom GPTs, and file uploads.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>Does mixing and matching AI platforms matter?</span></div>
+      <div class="a">Not at all. The principles transfer between platforms. They all have their own quirks, but the fundamentals are the same. Own the playbook, rent the tech.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>How do we set up multiple users?</span></div>
+      <div class="a">Options: you can share a ChatGPT login to start (everyone sees everything), separate paid accounts for privacy, or use Gemini free via Google Workspace. Watch file permissions if using Microsoft Copilot. All the platforms have options for teams and workplaces.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>What about environmental impact?</span></div>
+      <div class="a">There's no universal metric for AI's environmental cost. Water usage stats are unreliable. Data centres (AI + internet) currently use 1.5-3% of global power. It's a legitimate concern, but context matters. For perspective: dairy production is more resource-intensive per unit than an AI prompt.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="q"><span>What about data security and privacy?</span></div>
+      <div class="a">Find your settings and turn off "improve the model for everybody." On paid plans, your data is not used for training by default. The larger security risk is hackers using AI to exploit systems, not the models themselves leaking your data. Be vigilant if you are using Claude Code or anything in the CLI. Downloading skills, packages, extensions from GitHub/VS Code and similar can be risky.</div>
+    </div>
+  </div>
+
+  <!-- Try This Next -->
+  <div class="section" id="try-next">
+    <h2 class="section-title">Try This Next</h2>
+
+    <div class="action-card">
+      <div class="action-num">1</div>
+      <div>
+        <h3>Pay for it.</h3>
+        <p>Free models are why you think AI is average. The paid version is a completely different experience.</p>
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="action-num">2</div>
+      <div>
+        <h3>Talk to it.</h3>
+        <p>Open ChatGPT, hit the voice button, and brain dump about your mountain for two minutes. Then say: "Do you have any questions for me before we proceed?" Watch what happens.</p>
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="action-num">3</div>
+      <div>
+        <h3>Brief your first AI teammate.</h3>
+        <p>Pick one thing you do more than three times a week (incident reports, staff FAQ, meeting notes). Spend 30 minutes setting up a Custom GPT / Microsoft Agent / Claude Project / or Google Gem with your context and instructions. Refine it over a week. You can't break anything.</p>
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="action-num">4</div>
+      <div>
+        <h3>Turn off the training toggle.</h3>
+        <p>Open ChatGPT (or whichever platform you use). Go to Settings &rarr; Data Controls &rarr; turn off "Improve the model for everyone."</p>
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="action-num">5</div>
+      <div>
+        <h3>Try the YETI framework.</h3>
+        <p>Next time you need AI to help with something, use voice and walk through Yarn &rarr; Expertise &rarr; Task &rarr; Interview. Notice the difference in output quality.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="section" id="dashboard">
+    <h2 class="section-title">Your Survey Dashboard</h2>
+    <div class="callout">
+      <h3>The dashboard is yours to keep</h3>
+      <p>Built from your survey responses. The survey is still open, so share it with colleagues who weren't in the room. The more responses, the richer the snapshot of where your organisation stands with AI.</p>
+      <a class="btn btn-ice" href="dashboard.html">View Dashboard &rarr;</a>
+      <a class="btn btn-gold" href="https://tally.so/r/Ek0djo" target="_blank" rel="noopener">Take the Survey &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Quotes -->
+  <div class="section" id="quotes">
+    <h2 class="section-title">Key Quotes</h2>
+
+    <div class="quote-card">
+      <blockquote>"AI has broken that equation; that no longer stands."</blockquote>
+      <div class="context">on why effort + time + expertise no longer equals value</div>
+    </div>
+
+    <div class="quote-card">
+      <blockquote>"The magic of our industry is when you are sitting on a chairlift and you are talking to a guest."</blockquote>
+      <div class="context">on what AI should protect, not replace</div>
+    </div>
+
+    <div class="quote-card">
+      <blockquote>"The first response is the beginning of the conversation."</blockquote>
+      <div class="context">on why most people give up too early</div>
+    </div>
+
+    <div class="quote-card">
+      <blockquote>"Own the playbook, rent the tech."</blockquote>
+      <div class="context">on building capability, not platform dependency</div>
+    </div>
+
+    <div class="quote-card">
+      <blockquote>"Ninety percent people and ten percent technology."</blockquote>
+      <div class="context">on what AI adoption is really about</div>
+    </div>
+
+    <div class="quote-card">
+      <blockquote>"Everybody's too busy being busy to learn the thing that's going to make them less busy."</blockquote>
+      <div class="context">on the adoption paradox</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Notes prepared from workshop content. For questions about implementing these concepts, contact Nadia at <a href="mailto:nadia@curiosity.co.nz">nadia@curiosity.co.nz</a> or follow on <a href="https://www.linkedin.com/in/nadia-ellis/" target="_blank" rel="noopener">LinkedIn</a></p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const c = document.getElementById('snow');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');
+    p.className='snow-particle';
+    p.style.left=Math.random()*100+'%';
+    const s=Math.random()*2.5+1;
+    p.style.width=p.style.height=s+'px';
+    p.style.animationDuration=(Math.random()*25+18)+'s';
+    p.style.animationDelay=(Math.random()*25)+'s';
+    p.style.opacity=Math.random()*0.25+0.08;
+    c.appendChild(p);
+  }
+})();
+</script>
+</body>
+</html>
