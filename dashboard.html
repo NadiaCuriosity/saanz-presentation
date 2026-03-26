@@ -81,6 +81,19 @@ main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48p
 .part-line{text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:48px;padding:0 24px}
 .part-line span{color:var(--text-sec);font-weight:500}
 
+/* Survey CTA */
+.survey-cta{background:linear-gradient(135deg,rgba(93,173,226,0.08),rgba(61,214,200,0.06));
+  border:1px solid rgba(93,173,226,0.2);border-radius:16px;padding:20px 28px;
+  text-align:center;margin-bottom:40px;display:flex;align-items:center;
+  justify-content:center;gap:16px;flex-wrap:wrap}
+.survey-cta p{font-size:15px;color:var(--text-sec);line-height:1.5}
+.survey-cta a{display:inline-flex;align-items:center;gap:6px;
+  padding:10px 22px;border-radius:100px;font-family:'Sora',sans-serif;
+  font-size:14px;font-weight:600;text-decoration:none;
+  background:rgba(232,184,75,0.12);color:var(--gold);
+  border:1px solid rgba(232,184,75,0.25);transition:all .2s;flex-shrink:0}
+.survey-cta a:hover{background:rgba(232,184,75,0.22)}
+
 /* Sections */
 .sec{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:up .6s ease forwards}
 .sec:nth-child(2){animation-delay:.1s}.sec:nth-child(3){animation-delay:.2s}
@@ -197,6 +210,11 @@ main{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:40px 48p
     <div class="hcard"><span class="num" id="v-areas">0</span><span class="lbl">Ski areas represented</span></div>
   </div>
   <div class="part-line" id="part"></div>
+
+  <div class="survey-cta">
+    <p>Haven't filled in the survey yet? The dashboard updates automatically with new responses.</p>
+    <a href="https://tally.so/r/Ek0djo" target="_blank" rel="noopener">Take the Survey &rarr;</a>
+  </div>
 
   <!-- 01 How people feel about AI -->
   <div class="sec" id="s1">
